@@ -363,6 +363,11 @@ export default function Dashboard() {
                   <div>
                     <h2 className="text-lg font-bold text-white font-poppins flex items-center space-x-2">
                       <span>{selectedLead.business_name}</span>
+                      {selectedLead.tech_stack && (
+                        <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-md font-semibold border border-indigo-500/30">
+                          {selectedLead.tech_stack}
+                        </span>
+                      )}
                     </h2>
                     <div className="flex items-center space-x-2 text-xs mt-1">
                       <a href={selectedLead.website_url} target="_blank" className="text-blue-400 underline font-medium">

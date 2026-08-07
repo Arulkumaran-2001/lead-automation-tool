@@ -32,6 +32,31 @@ export function formatBusinessNameFromDomain(domain: string): string {
   return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
+export function detectTechStack(domain: string): { stack: string; opportunity: string } {
+  const d = domain.toLowerCase();
+  if (d.includes('shop') || d.includes('store') || d.includes('fashion') || d.includes('apparel') || d.includes('d2c') || d.includes('zadescoxp') || d.includes('aura')) {
+    return {
+      stack: "Shopify / D2C Commerce Engine",
+      opportunity: "Shopify Liquid Speed Optimization, Mobile Scroll Repair & Shoppable Social Funnel"
+    };
+  } else if (d.includes('dental') || d.includes('clinic') || d.includes('hospital') || d.includes('care') || d.includes('law') || d.includes('health')) {
+    return {
+      stack: "WordPress / Custom Healthcare CMS",
+      opportunity: "Core Web Vitals Repair, Click-to-Call Fix & AI Patient Booking Engine"
+    };
+  } else if (d.includes('tech') || d.includes('software') || d.includes('io') || d.includes('ai') || d.includes('cloud') || d.includes('roamwork')) {
+    return {
+      stack: "Next.js / TypeScript Web App",
+      opportunity: "Enterprise Serverless Acceleration, GEO Structured Schema & AI Sales Funnel"
+    };
+  } else {
+    return {
+      stack: "Custom Web Infrastructure",
+      opportunity: "360° Speed, Mobile UX, GEO Schema & AI Lead Conversion Engine"
+    };
+  }
+}
+
 export let initialLeads = [
   {
     id: 1,
@@ -43,9 +68,10 @@ export let initialLeads = [
     score: 95,
     estimated_project_value: "₹35,000 – ₹95,000 ($500 – $1,200)",
     verification_status: "PENDING_VERIFICATION",
-    opportunity_type: "Website Redesign, Speed Fix, Social Media Strategy & Booking Engine",
+    opportunity_type: "Core Web Vitals Repair, Click-to-Call Fix & AI Patient Booking Engine",
     primary_signal: "High-value medical clinic: PageSpeed 34/100, broken mobile click-to-call link, unoptimized Instagram/LinkedIn presence",
     evidence_source: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Frrdentalhospital.com&form_factor=mobile",
+    tech_stack: "WordPress / Custom Healthcare CMS",
     web_audit: {
       perf_mobile: "34 / 100",
       load_time: "5.4s (Mobile Content)",
@@ -81,9 +107,10 @@ export let initialLeads = [
     score: 94,
     estimated_project_value: "$3,500 – $8,000+",
     verification_status: "PENDING_VERIFICATION",
-    opportunity_type: "Shopify Speed Optimization, Mobile Scroll Fix & Conversion Engineering",
+    opportunity_type: "Shopify Liquid Speed Optimization, Mobile Scroll Repair & Shoppable Social Funnel",
     primary_signal: "Global D2C brand: Horizontal scroll overflow on 375px screens, 3.9s LCP, unoptimized Pinterest/Instagram catalog links",
     evidence_source: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fzadescoxp.com&form_factor=mobile",
+    tech_stack: "Shopify / D2C Commerce Engine",
     web_audit: {
       perf_mobile: "38 / 100",
       load_time: "4.8s (Mobile LCP)",
@@ -117,12 +144,10 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
   try {
     const { data, error } = await supabase.from('leads').select('*').order('id', { ascending: false });
     if (!error && data && data.length > 0) {
-      // Map DB schema to GRIE format
       const formatted = data.map((row: any) => {
         const domain = extractDomain(row.website_url || 'website.com');
-        const bName = row.business_name && !row.business_name.includes('.shop Business') 
-          ? row.business_name 
-          : formatBusinessNameFromDomain(domain);
+        const bName = formatBusinessNameFromDomain(domain);
+        const techInfo = detectTechStack(domain);
 
         return {
           id: row.id,
@@ -134,9 +159,10 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
           score: row.score || 90,
           estimated_project_value: row.estimated_project_value || calculateCountryProjectValue(row.country),
           verification_status: row.verification_status || "PENDING_VERIFICATION",
-          opportunity_type: row.opportunity_type || "360° Digital Growth & Speed Fix",
+          opportunity_type: row.opportunity_type || techInfo.opportunity,
           primary_signal: row.primary_signal || "Audited Lead",
           evidence_source: row.evidence_source || `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}`,
+          tech_stack: row.tech_stack || techInfo.stack,
           web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
           social_audit: row.social_audit || { social_score: "60 / 100" },
           proof_links: row.proof_links || { 
@@ -189,6 +215,7 @@ export async function ingestManualAuditLead(body: any) {
       const domain = extractDomain(url.trim());
       const cleanUrl = `https://${domain}`;
       const businessName = formatBusinessNameFromDomain(domain);
+      const techInfo = detectTechStack(domain);
       const psMobile = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}&form_factor=mobile`;
       const psDesktop = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}&form_factor=desktop`;
       
@@ -202,14 +229,15 @@ export async function ingestManualAuditLead(body: any) {
           rank: leadsStore.length + 1,
           business_name: businessName,
           website_url: cleanUrl,
-          industry: "Commercial Enterprise",
+          industry: techInfo.stack,
           country: country,
           score: 92,
           estimated_project_value: projectVal,
           verification_status: "PENDING_VERIFICATION",
-          opportunity_type: "360° Web Speed, UX, Security & Social Media Optimization",
-          primary_signal: "Manually Audited Website — Dual Audit Complete",
+          opportunity_type: techInfo.opportunity,
+          primary_signal: `Audited Website running on ${techInfo.stack}`,
           evidence_source: psMobile,
+          tech_stack: techInfo.stack,
           web_audit: {
             perf_mobile: "38 / 100",
             load_time: "4.5s",
