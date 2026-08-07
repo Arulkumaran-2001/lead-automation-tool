@@ -8,9 +8,9 @@ export async function GET(request: Request) {
   const testUrl = "https://rrdentalhospital.com";
   
   try {
-    const psiRes = await fetch(
-      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(testUrl)}&strategy=mobile`
-    );
+    const apiKey = process.env.PAGESPEED_API_KEY;
+    const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(testUrl)}&strategy=mobile${apiKey ? `&key=${apiKey}` : ''}`;
+    const psiRes = await fetch(apiUrl);
     const psiData = await psiRes.json();
     
     const lighthouse = psiData.lighthouseResult;
