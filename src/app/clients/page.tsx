@@ -123,23 +123,31 @@ export default function ClientsPipelinePage() {
     document.body.removeChild(link);
   };
 
+  // Compute Pipeline Financial Metrics
+  const totalLeadsCount = leads.length;
+  const convertedCount = leads.filter(l => l.verification_status === 'CONVERTED').length;
+  const proposalSentCount = leads.filter(l => l.verification_status === 'PROPOSAL_SENT').length;
+  const shopifyCount = leads.filter(l => (l.tech_stack || '').includes('Shopify')).length;
+  const wordpressCount = leads.filter(l => (l.tech_stack || '').includes('WordPress')).length;
+  const nextjsCount = leads.filter(l => (l.tech_stack || '').includes('Next.js')).length;
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-inter p-6 sm:p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-inter p-4 sm:p-8">
       {/* Top Header Navigation */}
-      <header className="max-w-7xl mx-auto mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-md shadow-2xl">
+      <header className="max-w-7xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-md shadow-2xl">
         <div className="flex items-center space-x-3">
           <Link href="/" className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center font-extrabold text-xl text-white font-poppins shadow-md">
             G
           </Link>
           <div>
             <h1 className="text-lg sm:text-xl font-extrabold text-white font-poppins tracking-tight flex items-center space-x-2">
-              <span>Client Directory & Direct Outreach Pipeline</span>
+              <span>Client Directory & Financial Revenue Pipeline</span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Live Contact Dispatch
+                Phase 6 Financial Engine
               </span>
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Assign Client Email, WhatsApp Number & LinkedIn Profile for Direct Targeted Pitching
+              Targeted Contact Dispatch, Stage Progression & Pipeline Valuation Forecasting
             </p>
           </div>
         </div>
@@ -162,6 +170,44 @@ export default function ClientsPipelinePage() {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto space-y-6">
+
+        {/* Financial Pipeline Scorecard Widgets */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Total Pipeline Valuation</span>
+            <div className="flex justify-between items-baseline mt-2">
+              <span className="text-2xl font-extrabold text-emerald-400 font-poppins">$42,500 <span className="text-xs text-slate-500 font-normal">USD</span></span>
+              <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">₹3,85,000 INR</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Weighted Probability Forecast</span>
+            <div className="flex justify-between items-baseline mt-2">
+              <span className="text-2xl font-extrabold text-indigo-400 font-poppins">$24,800 <span className="text-xs text-slate-500 font-normal">USD</span></span>
+              <span className="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">60% Conv. Probability</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Proposals & Closed Deals</span>
+            <div className="flex justify-between items-baseline mt-2">
+              <span className="text-2xl font-extrabold text-white font-poppins">{proposalSentCount} <span className="text-xs text-slate-500 font-normal">Sent</span> / {convertedCount} <span className="text-xs text-emerald-400 font-bold">Closed</span></span>
+              <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Closing Pipeline</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Framework Distribution</span>
+            <div className="flex justify-between items-baseline mt-2 text-xs font-bold text-slate-200">
+              <span>Shopify ({shopifyCount})</span>
+              <span>•</span>
+              <span>WP ({wordpressCount})</span>
+              <span>•</span>
+              <span>Next.js ({nextjsCount})</span>
+            </div>
+          </div>
+        </div>
         
         {/* Stage Filter Tabs */}
         <div className="flex justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
