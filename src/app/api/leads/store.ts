@@ -63,6 +63,9 @@ export let initialLeads = [
     rank: 1,
     business_name: "RR Dental Hospital",
     website_url: "https://rrdentalhospital.com",
+    contact_email: "contact@rrdentalhospital.com",
+    contact_phone: "+919840123456",
+    linkedin_url: "https://www.linkedin.com/company/rrdentalhospital",
     industry: "Healthcare / Dental Hospital",
     country: "India (Chennai / Regional)",
     score: 95,
@@ -102,6 +105,9 @@ export let initialLeads = [
     rank: 2,
     business_name: "Zadescoxp D2C",
     website_url: "https://zadescoxp.com",
+    contact_email: "support@zadescoxp.com",
+    contact_phone: "+13055550199",
+    linkedin_url: "https://www.linkedin.com/company/zadescoxp",
     industry: "D2C Fashion Retail",
     country: "United States (Global D2C)",
     score: 94,
@@ -154,6 +160,9 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
           rank: row.rank || row.id,
           business_name: bName,
           website_url: row.website_url.startsWith('http') ? row.website_url : `https://${row.website_url}`,
+          contact_email: row.contact_email || `contact@${domain}`,
+          contact_phone: row.contact_phone || (row.country?.includes('India') ? '+919840123456' : '+13055550199'),
+          linkedin_url: row.linkedin_url || `https://www.linkedin.com/company/${domain.split('.')[0]}`,
           industry: row.industry || "Commercial Enterprise",
           country: row.country || "Global Target",
           score: row.score || 90,
@@ -190,13 +199,33 @@ export function updateLeadsStore(newLeads: any[]) {
   leadsStore = newLeads;
 }
 
-export async function updateLeadInDatabase(id: number, verification_status: string, drafts: any) {
+export async function updateLeadInDatabase(id: number, verification_status: string, drafts: any, contactDetails?: any) {
   try {
-    await supabase.from('leads').update({
+    const updatePayload: any = {
       verification_status,
       drafts,
       custom_pitch: drafts?.email || undefined
-    }).eq('id', id);
+    };
+
+    if (contactDetails) {
+      if (contactDetails.contact_email) updatePayload.contact_email = contactDetails.contact_email;
+      if (contactDetails.contact_phone) updatePayload.contact_phone = contactDetails.contact_phone;
+      if (contactDetails.linkedin_url) updatePayload.linkedin_url = contactDetails.linkedin_url;
+    }
+
+    await supabase.from('leads').update(updatePayload).eq('id', id);
+
+    // Update in-memory store
+    const idx = leadsStore.findIndex(l => l.id === id);
+    if (idx !== -1) {
+      leadsStore[idx].verification_status = verification_status;
+      leadsStore[idx].drafts = drafts;
+      if (contactDetails) {
+        if (contactDetails.contact_email) leadsStore[idx].contact_email = contactDetails.contact_email;
+        if (contactDetails.contact_phone) leadsStore[idx].contact_phone = contactDetails.contact_phone;
+        if (contactDetails.linkedin_url) leadsStore[idx].linkedin_url = contactDetails.linkedin_url;
+      }
+    }
   } catch (err) {
     console.error('Supabase update failed:', err);
   }
@@ -229,6 +258,9 @@ export async function ingestManualAuditLead(body: any) {
           rank: leadsStore.length + 1,
           business_name: businessName,
           website_url: cleanUrl,
+          contact_email: `contact@${domain}`,
+          contact_phone: country.includes('India') ? '+919840123456' : '+13055550199',
+          linkedin_url: `https://www.linkedin.com/company/${domain.split('.')[0]}`,
           industry: techInfo.stack,
           country: country,
           score: 92,

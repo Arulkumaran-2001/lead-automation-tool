@@ -122,17 +122,22 @@ export default function Dashboard() {
         })
       });
 
+      const domain = selectedLead.website_url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      const targetPhone = (selectedLead.contact_phone || '').replace(/[^\d+]/g, '') || '+919840123456';
+      const targetEmail = selectedLead.contact_email || `contact@${domain}`;
+      const targetLinkedIn = selectedLead.linkedin_url || `https://www.linkedin.com/company/${domain.split('.')[0]}`;
+
       if (channel === 'WHATSAPP') {
         const text = encodeURIComponent(draftContent);
-        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=${targetPhone}&text=${text}`, '_blank');
       } else if (channel === 'GMAIL') {
         const subject = encodeURIComponent(`Executive Teaser Audit for ${selectedLead.business_name}`);
         const body = encodeURIComponent(draftContent);
-        window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+        window.open(`mailto:${targetEmail}?subject=${subject}&body=${body}`, '_blank');
       } else if (channel === 'LINKEDIN') {
         await navigator.clipboard.writeText(draftContent);
-        window.open('https://www.linkedin.com/messaging/', '_blank');
-        alert('LinkedIn DM pitch copied to clipboard! Opening LinkedIn Messages...');
+        window.open(targetLinkedIn, '_blank');
+        alert(`LinkedIn DM pitch copied to clipboard! Opening ${selectedLead.business_name}'s LinkedIn profile...`);
       }
 
       await fetchLeads();
@@ -179,10 +184,10 @@ export default function Dashboard() {
             <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
               <span>🤖 AI Opportunity Engine</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
+            <a href="/clients" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
               <span>💼 Client Pipeline System</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
+            <a href="/clients" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
               <span>📄 Proposal Generator</span>
             </a>
           </nav>
