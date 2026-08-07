@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { leadsStore, updateLeadsStore, ingestManualAuditLead } from './store';
+import { leadsStore, fetchLeadsFromStore, updateLeadsStore, updateLeadInDatabase, ingestManualAuditLead } from './store';
 
 export async function GET() {
-  return NextResponse.json({ success: true, leads: leadsStore });
+  const leads = await fetchLeadsFromStore();
+  return NextResponse.json({ success: true, leads });
 }
 
 export async function POST(request: Request) {
@@ -26,6 +27,10 @@ export async function POST(request: Request) {
     return lead;
   });
   updateLeadsStore(updatedLeads);
+  
+  if (id && verification_status) {
+    await updateLeadInDatabase(id, verification_status, drafts);
+  }
 
   return NextResponse.json({ success: true, message: "Lead updated successfully", leads: leadsStore });
 }

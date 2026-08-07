@@ -1,3 +1,5 @@
+import { supabase } from '../../../utils/supabase';
+
 export function calculateCountryProjectValue(country: string): string {
   const c = (country || '').toLowerCase();
   if (c.includes('us') || c.includes('united states') || c.includes('uk') || c.includes('united kingdom') || c.includes('australia') || c.includes('canada') || c.includes('uae') || c.includes('dubai') || c.includes('singapore')) {
@@ -15,7 +17,7 @@ export function extractDomain(url: string): string {
   return url.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0].toLowerCase();
 }
 
-export let leadsStore = [
+export let initialLeads = [
   {
     id: 1,
     rank: 1,
@@ -94,8 +96,59 @@ export let leadsStore = [
   }
 ];
 
+export let leadsStore = [...initialLeads];
+
+export async function fetchLeadsFromStore(): Promise<any[]> {
+  try {
+    const { data, error } = await supabase.from('leads').select('*').order('id', { ascending: false });
+    if (!error && data && data.length > 0) {
+      // Map DB schema to GRIE format
+      const formatted = data.map((row: any) => ({
+        id: row.id,
+        rank: row.rank || row.id,
+        business_name: row.business_name,
+        website_url: row.website_url,
+        industry: row.industry || "Commercial Enterprise",
+        country: row.country || "Global Target",
+        score: row.score || 90,
+        estimated_project_value: row.estimated_project_value || calculateCountryProjectValue(row.country),
+        verification_status: row.verification_status || "PENDING_VERIFICATION",
+        opportunity_type: row.opportunity_type || "360° Digital Growth & Speed Fix",
+        primary_signal: row.primary_signal || "Audited Lead",
+        evidence_source: row.evidence_source || row.website_url,
+        web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
+        social_audit: row.social_audit || { social_score: "60 / 100" },
+        proof_links: row.proof_links || { mobile: row.website_url, desktop: row.website_url },
+        drafts: row.drafts || {
+          email: row.custom_pitch || `Executive Digital Review for ${row.business_name}`,
+          linkedin: `Digital audit findings for ${row.business_name}`,
+          whatsapp: `360 Audit Report: ${row.website_url}`
+        },
+        pdf_path: row.pdf_path || row.pdf_drive_url || "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
+      }));
+      leadsStore = formatted;
+      return formatted;
+    }
+  } catch (err) {
+    console.error('Supabase fetch fallback to local store:', err);
+  }
+  return leadsStore;
+}
+
 export function updateLeadsStore(newLeads: any[]) {
   leadsStore = newLeads;
+}
+
+export async function updateLeadInDatabase(id: number, verification_status: string, drafts: any) {
+  try {
+    await supabase.from('leads').update({
+      verification_status,
+      drafts,
+      custom_pitch: drafts?.email || undefined
+    }).eq('id', id);
+  } catch (err) {
+    console.error('Supabase update failed:', err);
+  }
 }
 
 export async function ingestManualAuditLead(body: any) {
@@ -106,7 +159,7 @@ export async function ingestManualAuditLead(body: any) {
   let addedCount = 0;
   const existingDomains = new Set(leadsStore.map(l => extractDomain(l.website_url)));
   
-  urls.forEach((url) => {
+  for (const url of urls) {
     if (url.trim()) {
       const cleanUrl = url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`;
       const domain = extractDomain(cleanUrl);
@@ -116,7 +169,7 @@ export async function ingestManualAuditLead(body: any) {
         existingDomains.add(domain);
         addedCount++;
         
-        leadsStore.unshift({
+        const newLead = {
           id: leadsStore.length + 1,
           rank: leadsStore.length + 1,
           business_name: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Business`,
@@ -153,10 +206,29 @@ export async function ingestManualAuditLead(body: any) {
             whatsapp: `Hi ${domain} Team! Here is your 360° Web & Social Media Audit Report: ${cleanUrl}`
           },
           pdf_path: "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
-        });
+        };
+
+        leadsStore.unshift(newLead);
+
+        // Try writing basic row to Supabase
+        try {
+          await supabase.from('leads').insert([{
+            rank: newLead.rank,
+            business_name: newLead.business_name,
+            website_url: newLead.website_url,
+            score: newLead.score,
+            verification_status: newLead.verification_status,
+            primary_signal: newLead.primary_signal,
+            evidence_source: newLead.evidence_source,
+            custom_pitch: newLead.drafts.email,
+            pdf_drive_url: newLead.pdf_path
+          }]);
+        } catch (dbErr) {
+          console.error('Supabase write notice:', dbErr);
+        }
       }
     }
-  });
+  }
 
   return {
     success: true,
