@@ -67,20 +67,49 @@ export default function ProposalPage() {
     return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
+  const [currency, setCurrency] = useState<'USD' | 'EUR' | 'GBP' | 'AED' | 'INR'>('USD');
+
+  const getCurrencyValuation = (curr: string, baseVal?: string) => {
+    if (baseVal && baseVal.includes('₹') && curr === 'INR') return baseVal;
+    if (curr === 'USD') return '$3,500 – $8,000+';
+    if (curr === 'EUR') return '€3,200 – €7,400+';
+    if (curr === 'GBP') return '£2,800 – £6,500+';
+    if (curr === 'AED') return 'AED 12,800 – AED 29,400+';
+    if (curr === 'INR') return '₹2,90,000 – ₹6,60,000+';
+    return baseVal || '$3,500 – $8,000+';
+  };
+
   const businessName = formatBusinessName(cleanDomain, lead?.business_name);
   const websiteUrl = lead?.website_url || `https://${cleanDomain}`;
   const country = lead?.country || 'Global Target';
-  const investment = lead?.estimated_project_value || '$3,500 – $8,000+';
+  const investment = getCurrencyValuation(currency, lead?.estimated_project_value);
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-inter p-4 sm:p-8 print:p-0 print:bg-white">
       {/* Floating Control Bar */}
-      <div className="max-w-4xl mx-auto mb-6 flex justify-between items-center bg-slate-900 text-white p-4 rounded-2xl shadow-xl print:hidden">
+      <div className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-3 bg-slate-900 text-white p-4 rounded-2xl shadow-xl print:hidden">
         <div>
           <h1 className="font-bold text-sm font-poppins">Formal Project Proposal & Statement of Work (SOW)</h1>
           <p className="text-xs text-slate-400">Client: <span className="text-white font-semibold">{businessName}</span> ({cleanDomain})</p>
         </div>
-        <div className="flex space-x-3">
+
+        <div className="flex items-center space-x-3">
+          {/* Live Currency Selector */}
+          <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <span className="text-[10px] font-bold text-slate-400 px-1">Currency:</span>
+            {['USD', 'EUR', 'GBP', 'AED', 'INR'].map((c) => (
+              <button
+                key={c}
+                onClick={() => setCurrency(c as any)}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins ${
+                  currency === c ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
           <button
             onClick={() => window.print()}
             className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-lg flex items-center space-x-2 font-poppins"

@@ -94,16 +94,45 @@ export default function ClientsPipelinePage() {
     return l.verification_status === filterStage;
   });
 
+  const handleExportCSV = () => {
+    if (filteredLeads.length === 0) return alert('No client records to export.');
+    
+    const headers = ["ID", "Business Name", "Website URL", "Contact Email", "WhatsApp Phone", "LinkedIn URL", "Country", "Tech Stack", "Opportunity Score", "CRM Stage", "Valuation"];
+    
+    const rows = filteredLeads.map(l => [
+      l.id,
+      `"${(l.business_name || '').replace(/"/g, '""')}"`,
+      `"${(l.website_url || '').replace(/"/g, '""')}"`,
+      `"${(l.contact_email || '').replace(/"/g, '""')}"`,
+      `"${(l.contact_phone || '').replace(/"/g, '""')}"`,
+      `"${(l.linkedin_url || '').replace(/"/g, '""')}"`,
+      `"${(l.country || '').replace(/"/g, '""')}"`,
+      `"${(l.tech_stack || '').replace(/"/g, '""')}"`,
+      l.score || 90,
+      `"${(l.verification_status || '').replace(/"/g, '""')}"`,
+      `"${(l.estimated_project_value || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `GRIE_Client_Pipeline_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-inter p-6 sm:p-8">
       {/* Top Header Navigation */}
-      <header className="max-w-7xl mx-auto mb-8 flex justify-between items-center bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-md shadow-2xl">
+      <header className="max-w-7xl mx-auto mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 backdrop-blur-md shadow-2xl">
         <div className="flex items-center space-x-3">
           <Link href="/" className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center font-extrabold text-xl text-white font-poppins shadow-md">
             G
           </Link>
           <div>
-            <h1 className="text-xl font-extrabold text-white font-poppins tracking-tight flex items-center space-x-2">
+            <h1 className="text-lg sm:text-xl font-extrabold text-white font-poppins tracking-tight flex items-center space-x-2">
               <span>Client Directory & Direct Outreach Pipeline</span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Live Contact Dispatch
@@ -115,12 +144,18 @@ export default function ClientsPipelinePage() {
           </div>
         </div>
 
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 w-full sm:w-auto">
+          <button
+            onClick={handleExportCSV}
+            className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 font-poppins flex items-center justify-center space-x-1.5 active:scale-95"
+          >
+            <span>📊 Export to CSV</span>
+          </button>
           <Link
             href="/"
-            className="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition font-poppins border border-slate-700"
+            className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition font-poppins border border-slate-700 text-center"
           >
-            ← Back to Discovery Queue
+            ← Back to Queue
           </Link>
         </div>
       </header>
