@@ -1,6 +1,27 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import {
+  Target,
+  Search,
+  Bot,
+  Briefcase,
+  FileText,
+  CheckCircle2,
+  Zap,
+  Plus,
+  Globe,
+  Smartphone,
+  Mail,
+  Linkedin,
+  MessageSquare,
+  Menu,
+  X,
+  Building2,
+  Sparkles,
+  ShieldCheck,
+  LogOut
+} from 'lucide-react';
 
 export default function Dashboard() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -19,8 +40,20 @@ export default function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    // Admin Security Auth Check
+    const isAuth = typeof window !== 'undefined' && (localStorage.getItem('grie_admin_authenticated') === 'true' || document.cookie.includes('grie_admin_authenticated=true'));
+    if (!isAuth) {
+      window.location.href = 'https://www.roamwork.in/';
+      return;
+    }
     fetchLeads();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('grie_admin_authenticated');
+    document.cookie = "grie_admin_authenticated=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    window.location.href = 'https://www.roamwork.in/';
+  };
 
   const fetchLeads = async () => {
     try {
@@ -53,16 +86,15 @@ export default function Dashboard() {
     }
   };
 
-  // 1-CLICK LIVE LEAD GENERATOR
   const handleOneClickGenerateLeads = async () => {
     setLoading(true);
-    setGenMessage('Scanning global candidate pool & performing 360° audit...');
+    setGenMessage('Scanning candidate pool and performing 360 degree audit...');
 
     try {
       const res = await fetch('/api/generate-leads', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        setGenMessage('Fresh buyer-intent lead audited & added!');
+        setGenMessage('Fresh buyer-intent lead audited and added!');
         await fetchLeads();
       }
     } catch (err) {
@@ -73,7 +105,6 @@ export default function Dashboard() {
     }
   };
 
-  // MANUAL URL AUDIT SUBMIT
   const handleManualAuditSubmit = async () => {
     if (!manualUrl.trim()) return;
     setLoading(true);
@@ -132,7 +163,7 @@ export default function Dashboard() {
         const text = encodeURIComponent(draftContent);
         window.open(`https://api.whatsapp.com/send?phone=${targetPhone}&text=${text}`, '_blank');
       } else if (channel === 'GMAIL') {
-        const subject = encodeURIComponent(`Executive Teaser Audit for ${selectedLead.business_name}`);
+        const subject = encodeURIComponent(`Executive Digital Review for ${selectedLead.business_name}`);
         const body = encodeURIComponent(draftContent);
         window.open(`mailto:${targetEmail}?subject=${subject}&body=${body}`, '_blank');
       } else if (channel === 'LINKEDIN') {
@@ -149,7 +180,6 @@ export default function Dashboard() {
     }
   };
 
-  // Compute KPI Scorecard Stats (Module 10)
   const totalLeadsCount = leads.length;
   const approvedCount = leads.filter(l => l.verification_status === 'VERIFIED_APPROVED').length;
   const avgScore = leads.length > 0 ? (leads.reduce((acc, l) => acc + (l.score || 0), 0) / leads.length).toFixed(1) : '0.0';
@@ -171,43 +201,55 @@ export default function Dashboard() {
                 G
               </div>
               <div>
-                <span className="font-extrabold text-base tracking-tight block text-white font-poppins">GRIE OS v3</span>
-                <span className="text-[10px] text-blue-400 font-semibold tracking-wider uppercase">Revenue Engine</span>
+                <span className="font-extrabold text-base tracking-tight block text-white font-poppins">GRIE Engine</span>
+                <span className="text-[10px] text-blue-400 font-semibold tracking-wider uppercase">RoamWork OS</span>
               </div>
             </div>
 
-            <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden text-slate-400 font-bold p-1">✕</button>
+            <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden text-slate-400 font-bold p-1">
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           <nav className="space-y-1.5">
             <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl bg-blue-600/90 text-white font-semibold text-xs shadow-md shadow-blue-600/20 font-poppins transition">
-              <span>🎯 Discovery Queue</span>
+              <Target className="w-4 h-4" />
+              <span>Discovery Queue</span>
             </a>
             <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
-              <span>🔍 360° Web & Social Audit</span>
+              <Search className="w-4 h-4" />
+              <span>360° Web Audit</span>
             </a>
             <a href="#" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
-              <span>🤖 AI Opportunity Engine</span>
+              <Bot className="w-4 h-4" />
+              <span>AI Opportunity Engine</span>
             </a>
             <a href="/clients" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
-              <span>💼 Client Pipeline System</span>
+              <Briefcase className="w-4 h-4 text-blue-400" />
+              <span>Client Pipeline System</span>
             </a>
             <a href="/clients" className="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-medium text-xs transition">
-              <span>📄 Proposal Generator</span>
+              <FileText className="w-4 h-4" />
+              <span>Proposal Generator</span>
             </a>
           </nav>
         </div>
 
         <div className="border-t border-slate-800/80 pt-4 px-2 text-[11px] text-slate-400 space-y-2">
           <div className="flex justify-between items-center">
-            <span>Supabase Database:</span>
+            <span>Database:</span>
             <span className="text-emerald-400 font-extrabold flex items-center space-x-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block"></span>
               <span>CONNECTED</span>
             </span>
           </div>
-          <div className="text-[10px] text-slate-500">Valuation: <code className="text-slate-300">Country-Aware Engine</code></div>
-          <div className="text-[10px] text-slate-500 pt-2 border-t border-slate-800/60">Platform: <strong>Global Revenue Engine</strong></div>
+          <div className="flex justify-between items-center pt-2">
+            <span className="text-slate-300 font-semibold">Admin Authenticated</span>
+            <button onClick={handleLogout} className="text-red-400 hover:text-red-300 text-[10px] font-bold flex items-center space-x-1">
+              <LogOut className="w-3 h-3" />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -217,14 +259,14 @@ export default function Dashboard() {
         <header className="bg-slate-900/60 border-b border-slate-800/80 px-4 sm:px-8 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 backdrop-blur-md">
           <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
             <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 rounded-xl bg-slate-800 text-white font-bold text-xs">
-              ☰ Menu
+              <Menu className="w-4 h-4" />
             </button>
             <div>
               <h1 className="text-lg sm:text-xl font-extrabold text-white tracking-tight font-poppins flex items-center space-x-2">
                 <span>Global Revenue Intelligence Engine</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">MVP Phase 2</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">RoamWork Platform</span>
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">Automated Lead Discovery, 360° Audit & AI Opportunity Conversion Platform</p>
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">Automated Lead Discovery, 360° Audit and AI Conversion Platform</p>
             </div>
           </div>
           
@@ -235,28 +277,28 @@ export default function Dashboard() {
               </span>
             )}
             
-            {/* 1-CLICK CTA BUTTON */}
             <button
               disabled={loading}
               onClick={handleOneClickGenerateLeads}
               className="flex-1 sm:flex-none bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 font-poppins flex items-center justify-center space-x-2 active:scale-95"
             >
-              <span>⚡ Generate Live Leads</span>
+              <Zap className="w-3.5 h-3.5" />
+              <span>Generate Live Leads</span>
             </button>
 
-            {/* MANUAL URL AUDIT BUTTON */}
             <button
               onClick={() => setShowManualModal(true)}
               className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 font-poppins flex items-center justify-center space-x-2 active:scale-95"
             >
-              <span>+ Manual Audit</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Manual Audit</span>
             </button>
           </div>
         </header>
 
         {/* Dashboard Body */}
         <div className="flex-1 flex flex-col overflow-y-auto lg:overflow-hidden p-4 sm:p-6 space-y-4 sm:space-y-6">
-          {/* KPI Scorecards (Module 10 - Reporting Dashboard) */}
+          {/* KPI Scorecards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Total Target Leads</span>
@@ -293,7 +335,7 @@ export default function Dashboard() {
 
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden gap-4 sm:gap-6">
-            {/* Left Column: Lead Queue (Module 1 & 9) */}
+            {/* Left Column: Lead Queue */}
             <div className="w-full lg:w-1/2 bg-slate-900/60 rounded-2xl border border-slate-800/80 shadow-xl flex flex-col overflow-hidden backdrop-blur-md">
               {/* Queue Header & Filters */}
               <div className="p-3 sm:p-4 border-b border-slate-800/80 bg-slate-900/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -304,7 +346,6 @@ export default function Dashboard() {
                   </span>
                 </div>
 
-                {/* Pipeline Filter Tabs (Module 9) */}
                 <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 w-full sm:w-auto justify-around">
                   <button
                     onClick={() => setPipelineFilter('ALL')}
@@ -349,8 +390,9 @@ export default function Dashboard() {
                       <span className="font-bold text-xs sm:text-sm text-white font-poppins flex items-center space-x-2">
                         <span>#{lead.rank} {lead.business_name}</span>
                         {lead.verification_status === 'VERIFIED_APPROVED' && (
-                          <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-semibold border border-emerald-500/30">
-                            ✓ Verified
+                          <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-semibold border border-emerald-500/30 flex items-center space-x-1">
+                            <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                            <span>Verified</span>
                           </span>
                         )}
                       </span>
@@ -393,50 +435,54 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  {/* READY TO SHARE TEASER PDF & PROPOSAL BUTTONS */}
                   <div className="flex space-x-2 w-full sm:w-auto">
                     <a
                       href={selectedLead.pdf_path}
                       target="_blank"
                       className="flex-1 sm:flex-none bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-blue-500/30 transition flex items-center justify-center space-x-1 font-poppins shadow-sm"
                     >
-                      <span>📄 Teaser PDF</span>
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Teaser PDF</span>
                     </a>
                     <a
                       href={`/proposals/${selectedLead.pdf_path.replace('/audits/', '')}`}
                       target="_blank"
                       className="flex-1 sm:flex-none bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-indigo-500/30 transition flex items-center justify-center space-x-1 font-poppins shadow-sm"
                     >
-                      <span>💼 Proposal & SOW</span>
+                      <Briefcase className="w-3.5 h-3.5" />
+                      <span>Proposal & SOW</span>
                     </a>
                   </div>
                 </div>
 
-                {/* Audit Tabs (Web vs Social vs AI Opps) */}
+                {/* Audit Tabs */}
                 <div className="flex border-b border-slate-800/80 mb-3 sm:mb-4 overflow-x-auto">
                   <button
                     onClick={() => setActiveAuditTab('WEB')}
-                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap ${
+                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap flex items-center space-x-1.5 ${
                       activeAuditTab === 'WEB' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    🌐 Web Quality Scan
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>Web Quality Scan</span>
                   </button>
                   <button
                     onClick={() => setActiveAuditTab('SOCIAL')}
-                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap ${
+                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap flex items-center space-x-1.5 ${
                       activeAuditTab === 'SOCIAL' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    📱 Social Media Audit
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>Social Media Audit</span>
                   </button>
                   <button
                     onClick={() => setActiveAuditTab('AI_OPPS')}
-                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap ${
+                    className={`pb-2 px-2.5 text-[11px] sm:text-xs font-bold border-b-2 transition font-poppins whitespace-nowrap flex items-center space-x-1.5 ${
                       activeAuditTab === 'AI_OPPS' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    🤖 AI Opportunities
+                    <Bot className="w-3.5 h-3.5" />
+                    <span>AI Opportunities</span>
                   </button>
                 </div>
 
@@ -446,18 +492,18 @@ export default function Dashboard() {
                       <div className="bg-slate-950/60 p-3 sm:p-4 rounded-xl border border-slate-800/80">
                         <h3 className="font-bold text-slate-300 mb-2 uppercase text-[10px] tracking-wider font-poppins">Web Technical & Conversion Vulnerabilities</h3>
                         <ul className="space-y-1.5 text-slate-300 text-[11px]">
-                          <li>🔴 <strong>Call Conversion Mismatch:</strong> {selectedLead.web_audit.click_to_call}</li>
-                          <li>🔴 <strong>Mobile PageSpeed:</strong> {selectedLead.web_audit.perf_mobile} (Load Time: {selectedLead.web_audit.load_time})</li>
-                          <li>🔴 <strong>Payload Weight:</strong> {selectedLead.web_audit.page_weight}</li>
-                          <li>🟡 <strong>SEO Indexability:</strong> {selectedLead.web_audit.seo_indexing}</li>
-                          <li>🟡 <strong>Accessibility:</strong> {selectedLead.web_audit.a11y}</li>
+                          <li><strong>Call Conversion Mismatch:</strong> {selectedLead.web_audit.click_to_call}</li>
+                          <li><strong>Mobile PageSpeed:</strong> {selectedLead.web_audit.perf_mobile} (Load Time: {selectedLead.web_audit.load_time})</li>
+                          <li><strong>Payload Weight:</strong> {selectedLead.web_audit.page_weight}</li>
+                          <li><strong>SEO Indexability:</strong> {selectedLead.web_audit.seo_indexing}</li>
+                          <li><strong>Accessibility:</strong> {selectedLead.web_audit.a11y}</li>
                         </ul>
                       </div>
                       <div className="bg-slate-950/60 p-3 sm:p-4 rounded-xl border border-slate-800/80">
                         <h3 className="font-bold text-slate-300 mb-2 uppercase text-[10px] tracking-wider font-poppins">PageSpeed Proof Links</h3>
                         <div className="space-y-1.5 text-slate-300 text-[11px]">
-                          <div>📱 <a href={selectedLead.proof_links.mobile} target="_blank" className="text-blue-400 underline">Google Mobile Analysis Proof Link</a></div>
-                          <div>💻 <a href={selectedLead.proof_links.desktop} target="_blank" className="text-blue-400 underline">Google Desktop Analysis Proof Link</a></div>
+                          <div><a href={selectedLead.proof_links.mobile} target="_blank" className="text-blue-400 underline font-medium">Google Mobile Analysis Proof Link</a></div>
+                          <div><a href={selectedLead.proof_links.desktop} target="_blank" className="text-blue-400 underline font-medium">Google Desktop Analysis Proof Link</a></div>
                         </div>
                       </div>
                     </>
@@ -472,27 +518,27 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <div className="space-y-2 text-slate-300 text-[11px]">
-                        <div>💼 <strong>LinkedIn:</strong> {selectedLead.social_audit.linkedin_status}</div>
-                        <div>📸 <strong>Instagram:</strong> {selectedLead.social_audit.instagram_status}</div>
-                        <div>👥 <strong>Facebook:</strong> {selectedLead.social_audit.facebook_status}</div>
+                        <div><strong>LinkedIn:</strong> {selectedLead.social_audit.linkedin_status}</div>
+                        <div><strong>Instagram:</strong> {selectedLead.social_audit.instagram_status}</div>
+                        <div><strong>Facebook:</strong> {selectedLead.social_audit.facebook_status}</div>
                       </div>
                     </div>
                   )}
 
                   {activeAuditTab === 'AI_OPPS' && (
                     <div className="bg-slate-950/60 p-3 sm:p-4 rounded-xl border border-slate-800/80 space-y-3">
-                      <h3 className="font-bold text-indigo-300 uppercase text-[10px] tracking-wider font-poppins">AI & Automation Project Opportunities</h3>
+                      <h3 className="font-bold text-indigo-300 uppercase text-[10px] tracking-wider font-poppins">AI and Automation Project Opportunities</h3>
                       <div className="space-y-2 text-slate-300 text-[11px]">
                         <div className="p-2.5 bg-slate-900/80 rounded-lg border border-slate-800">
-                          <span className="font-bold text-white block mb-0.5">🤖 AI Customer Support Chatbot</span>
-                          <span className="text-[10px] text-slate-400">Automate after-hours patient/client inquiries and qualify inbound leads into CRM.</span>
+                          <span className="font-bold text-white block mb-0.5">AI Customer Support Chatbot</span>
+                          <span className="text-[10px] text-slate-400">Automate after-hours patient and client inquiries and qualify inbound leads into CRM.</span>
                           <div className="mt-1 flex justify-between text-[10px] text-emerald-400 font-semibold">
                             <span>Value: {selectedLead.estimated_project_value}</span>
                             <span>Complexity: Medium</span>
                           </div>
                         </div>
                         <div className="p-2.5 bg-slate-900/80 rounded-lg border border-slate-800">
-                          <span className="font-bold text-white block mb-0.5">⚡ Core Web Vitals & Speed Optimization</span>
+                          <span className="font-bold text-white block mb-0.5">Core Web Vitals and Speed Optimization</span>
                           <span className="text-[10px] text-slate-400">Compress media payload to boost conversion by 25%.</span>
                           <div className="mt-1 flex justify-between text-[10px] text-emerald-400 font-semibold">
                             <span>Impact: High Conversion boost</span>
@@ -507,32 +553,35 @@ export default function Dashboard() {
                   <div className="border-t border-slate-800/80 pt-3">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                       <label className="font-bold text-slate-300 uppercase text-[10px] tracking-wider font-poppins">
-                        Ready-to-Share Outreach Communications
+                        Outreach Communications
                       </label>
                       <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80">
                         <button
                           onClick={() => handleDraftTabChange('EMAIL')}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins ${
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins flex items-center space-x-1 ${
                             activeDraftTab === 'EMAIL' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400'
                           }`}
                         >
-                          ✉️ Email
+                          <Mail className="w-3 h-3" />
+                          <span>Email</span>
                         </button>
                         <button
                           onClick={() => handleDraftTabChange('LINKEDIN')}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins ${
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins flex items-center space-x-1 ${
                             activeDraftTab === 'LINKEDIN' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400'
                           }`}
                         >
-                          💼 LinkedIn
+                          <Linkedin className="w-3 h-3" />
+                          <span>LinkedIn</span>
                         </button>
                         <button
                           onClick={() => handleDraftTabChange('WHATSAPP')}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins ${
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition font-poppins flex items-center space-x-1 ${
                             activeDraftTab === 'WHATSAPP' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400'
                           }`}
                         >
-                          💬 WhatsApp
+                          <MessageSquare className="w-3 h-3" />
+                          <span>WhatsApp</span>
                         </button>
                       </div>
                     </div>
@@ -552,34 +601,37 @@ export default function Dashboard() {
                     <button
                       disabled={loading}
                       onClick={() => handleDispatch('GMAIL')}
-                      className="flex-1 bg-blue-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-blue-500 transition shadow-lg shadow-blue-600/20 active:scale-95"
+                      className="flex-1 bg-blue-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-blue-500 transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center space-x-1.5"
                     >
-                      ✉️ Approve & Draft in Gmail
+                      <Mail className="w-4 h-4" />
+                      <span>Approve and Draft in Gmail</span>
                     </button>
                   )}
                   {activeDraftTab === 'LINKEDIN' && (
                     <button
                       disabled={loading}
                       onClick={() => handleDispatch('LINKEDIN')}
-                      className="flex-1 bg-sky-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-sky-600 transition shadow-lg shadow-sky-700/20 active:scale-95"
+                      className="flex-1 bg-sky-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-sky-600 transition shadow-lg shadow-sky-700/20 active:scale-95 flex items-center justify-center space-x-1.5"
                     >
-                      💼 Open LinkedIn Profile
+                      <Linkedin className="w-4 h-4" />
+                      <span>Open LinkedIn Profile</span>
                     </button>
                   )}
                   {activeDraftTab === 'WHATSAPP' && (
                     <button
                       disabled={loading}
                       onClick={() => handleDispatch('WHATSAPP')}
-                      className="flex-1 bg-emerald-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/20 active:scale-95"
+                      className="flex-1 bg-emerald-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/20 active:scale-95 flex items-center justify-center space-x-1.5"
                     >
-                      💬 Open Client WhatsApp
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Open Client WhatsApp</span>
                     </button>
                   )}
                 </div>
               </div>
             ) : (
               <div className="w-full lg:w-1/2 bg-slate-900/60 rounded-2xl border border-slate-800/80 flex items-center justify-center text-slate-400 text-xs p-8">
-                Select a lead to inspect Dual Audit findings & Multi-Channel Drafts
+                Select a lead to inspect Dual Audit findings and Multi-Channel Drafts
               </div>
             )}
           </div>
@@ -591,8 +643,10 @@ export default function Dashboard() {
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div className="bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-800">
             <div className="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-              <h3 className="font-bold text-base text-white font-poppins">+ Manual Website Audit</h3>
-              <button onClick={() => setShowManualModal(false)} className="text-slate-400 hover:text-slate-200 text-sm font-bold">✕</button>
+              <h3 className="font-bold text-base text-white font-poppins">Manual Website Audit</h3>
+              <button onClick={() => setShowManualModal(false)} className="text-slate-400 hover:text-slate-200 text-sm font-bold">
+                <X className="w-5 h-5" />
+              </button>
             </div>
             
             <div className="space-y-4 mb-6">
@@ -614,12 +668,12 @@ export default function Dashboard() {
                   onChange={(e) => setManualCountry(e.target.value)}
                   className="w-full p-3 border border-slate-800 rounded-xl text-xs text-white bg-slate-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="United States">United States ($3,500 – $8,000+)</option>
-                  <option value="United Kingdom">United Kingdom ($3,500 – $8,000+)</option>
-                  <option value="United Arab Emirates">United Arab Emirates ($3,500 – $8,000+)</option>
-                  <option value="Australia">Australia ($3,500 – $8,000+)</option>
-                  <option value="Germany / Europe">Europe ($2,500 – $5,000)</option>
-                  <option value="India (Regional)">India (₹35,000 – ₹95,000)</option>
+                  <option value="United States">United States ($3,500 - $8,000+)</option>
+                  <option value="United Kingdom">United Kingdom ($3,500 - $8,000+)</option>
+                  <option value="United Arab Emirates">United Arab Emirates ($3,500 - $8,000+)</option>
+                  <option value="Australia">Australia ($3,500 - $8,000+)</option>
+                  <option value="Germany / Europe">Europe ($2,500 - $5,000)</option>
+                  <option value="India (Regional)">India (₹35,000 - ₹95,000)</option>
                 </select>
               </div>
             </div>
@@ -631,9 +685,10 @@ export default function Dashboard() {
               <button
                 disabled={loading}
                 onClick={handleManualAuditSubmit}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-600/20 active:scale-95"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center space-x-1.5"
               >
-                {loading ? 'Auditing...' : '⚡ Audit Site & Create PDF'}
+                <Zap className="w-3.5 h-3.5" />
+                <span>{loading ? 'Auditing...' : 'Audit Site and Create PDF'}</span>
               </button>
             </div>
           </div>

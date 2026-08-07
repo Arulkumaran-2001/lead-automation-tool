@@ -2,6 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import {
+  Printer,
+  Globe,
+  FileText,
+  CheckCircle2,
+  AlertTriangle,
+  TrendingUp,
+  Zap,
+  Download,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Building2,
+  ArrowRight
+} from 'lucide-react';
 
 export default function AuditReportPage() {
   const params = useParams();
@@ -24,9 +39,8 @@ export default function AuditReportPage() {
         if (found) {
           setLead(found);
         } else {
-          // Generate dynamic audit object for unlisted manual domain
           setLead({
-            business_name: `${cleanDomain.charAt(0).toUpperCase() + cleanDomain.slice(1)} Enterprise`,
+            business_name: formatBusinessName(cleanDomain),
             website_url: `https://${cleanDomain}`,
             country: 'Global Target',
             score: 92,
@@ -34,37 +48,17 @@ export default function AuditReportPage() {
               perf_mobile: '38 / 100',
               load_time: '4.5s',
               page_weight: '~6.8 MB',
-              a11y: '68 / 100',
-              click_to_call: 'Mobile layout & booking conversion flow verified',
-              seo_indexing: 'Missing JSON-LD structured schema'
-            },
-            social_audit: {
-              social_score: '60 / 100',
-              linkedin_status: 'Active profile, updated service links required',
-              instagram_status: 'Bio link points to slow unoptimized landing page',
-              facebook_status: 'Inconsistent posting schedule'
-            },
-            proof_links: {
-              mobile: `https://pagespeed.web.dev/analysis?url=https://${cleanDomain}`,
-              desktop: `https://pagespeed.web.dev/analysis?url=https://${cleanDomain}`
+              a11y: '68 / 100'
             }
           });
         }
       }
     } catch (err) {
-      console.error('Failed to fetch lead data for PDF report', err);
+      console.error('Failed to fetch lead data for audit report', err);
     } finally {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center font-inter">
-        <div className="animate-pulse text-sm font-semibold">Generating Executive Teaser Audit for {cleanDomain}...</div>
-      </div>
-    );
-  }
 
   const formatBusinessName = (domainStr: string, existingName?: string) => {
     if (existingName && !existingName.toLowerCase().includes('.in business') && !existingName.toLowerCase().includes('.shop business') && !existingName.toLowerCase().includes('.com business') && !existingName.endsWith(' Business') && !existingName.endsWith(' Enterprise')) {
@@ -79,13 +73,22 @@ export default function AuditReportPage() {
     return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center font-inter">
+        <div className="animate-pulse text-sm font-semibold">Generating Executive Teaser Audit for {cleanDomain}...</div>
+      </div>
+    );
+  }
+
   const businessName = formatBusinessName(cleanDomain, lead?.business_name);
   const websiteUrl = lead?.website_url || `https://${cleanDomain}`;
   const perfScore = lead?.web_audit?.perf_mobile || '38 / 100';
   const loadTime = lead?.web_audit?.load_time || '4.5s';
-  const a11yScore = lead?.web_audit?.a11y || '68 / 100';
   const pageWeight = lead?.web_audit?.page_weight || '~6.8 MB';
-  const encodedFullUrl = encodeURIComponent(`https://${cleanDomain}`);
+  const a11yScore = lead?.web_audit?.a11y || '68 / 100';
+
+  const encodedFullUrl = encodeURIComponent(websiteUrl);
   const proofMobile = lead?.proof_links?.mobile || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=mobile`;
   const proofDesktop = lead?.proof_links?.desktop || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=desktop`;
 
@@ -102,7 +105,8 @@ export default function AuditReportPage() {
             onClick={() => window.print()}
             className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-lg flex items-center space-x-2 font-poppins"
           >
-            <span>📥 Print / Save as PDF</span>
+            <Printer className="w-4 h-4" />
+            <span>Print or Save as PDF</span>
           </button>
         </div>
       </div>
@@ -119,7 +123,7 @@ export default function AuditReportPage() {
               {businessName}
             </h1>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              Digital Presence Review — <a href={websiteUrl} target="_blank" className="text-blue-600 underline">{cleanDomain}</a>
+              Digital Presence Review - <a href={websiteUrl} target="_blank" className="text-blue-600 underline">{cleanDomain}</a>
             </p>
           </div>
 
@@ -132,8 +136,14 @@ export default function AuditReportPage() {
             />
             <span className="font-extrabold text-xs sm:text-sm text-blue-600 font-poppins">RoamWork Technologies</span>
             <a href="https://www.roamwork.in/" target="_blank" className="text-[11px] sm:text-xs text-slate-600 underline font-medium">www.roamwork.in</a>
-            <span className="text-[10px] sm:text-[11px] text-slate-500">roamwork.techs@gmail.com</span>
-            <span className="text-[10px] sm:text-[11px] text-slate-500">WhatsApp: +91 96557 98100</span>
+            <span className="text-[10px] sm:text-[11px] text-slate-500 flex items-center space-x-1">
+              <Mail className="w-3 h-3 text-slate-400 inline" />
+              <span>roamwork.techs@gmail.com</span>
+            </span>
+            <span className="text-[10px] sm:text-[11px] text-slate-500 flex items-center space-x-1">
+              <Phone className="w-3 h-3 text-slate-400 inline" />
+              <span>WhatsApp: +91 96557 98100</span>
+            </span>
           </div>
         </div>
 
@@ -141,7 +151,7 @@ export default function AuditReportPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6 text-center">
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
             <span className="text-xl sm:text-2xl font-extrabold text-red-600 block font-poppins">{perfScore}</span>
-            <span className="text-[10px] text-slate-500 font-medium leading-tight block mt-0.5">Mobile performance score (Google)</span>
+            <span className="text-[10px] text-slate-500 font-medium leading-tight block mt-0.5">Mobile performance score</span>
           </div>
 
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -151,7 +161,7 @@ export default function AuditReportPage() {
 
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
             <span className="text-xl sm:text-2xl font-extrabold text-amber-600 block font-poppins">{a11yScore}</span>
-            <span className="text-[10px] text-slate-500 font-medium leading-tight block mt-0.5">Accessibility score (Google)</span>
+            <span className="text-[10px] text-slate-500 font-medium leading-tight block mt-0.5">Accessibility score</span>
           </div>
 
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -171,7 +181,10 @@ export default function AuditReportPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs mb-6">
             <div className="bg-red-50/60 p-3 rounded-xl border border-red-100">
-              <span className="font-bold text-red-900 block mb-1 font-poppins">🚨 Top Business Risks:</span>
+              <span className="font-bold text-red-900 block mb-1 font-poppins flex items-center space-x-1.5">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+                <span>Top Business Risks:</span>
+              </span>
               <ul className="space-y-1 text-red-800 text-[11px] list-disc list-inside">
                 <li>Mobile visitors bouncing due to load delays over 3.0s</li>
                 <li>Uncompressed media assets increasing mobile data usage</li>
@@ -180,11 +193,14 @@ export default function AuditReportPage() {
             </div>
 
             <div className="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
-              <span className="font-bold text-emerald-900 block mb-1 font-poppins">⚡ Top Growth Opportunities:</span>
+              <span className="font-bold text-emerald-900 block mb-1 font-poppins flex items-center space-x-1.5">
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+                <span>Top Growth Opportunities:</span>
+              </span>
               <ul className="space-y-1 text-emerald-800 text-[11px] list-disc list-inside">
                 <li>Compress image assets to WebP format to cut payload by ~60%</li>
                 <li>Inject JSON-LD schema for LocalBusiness and Services</li>
-                <li>Implement AI Customer Support & Chatbot booking funnel</li>
+                <li>Implement AI Customer Support and Chatbot booking funnel</li>
               </ul>
             </div>
           </div>
@@ -194,7 +210,8 @@ export default function AuditReportPage() {
         <section className="mb-6 bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-5 rounded-2xl shadow-xl print:border print:border-slate-300">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-xs font-extrabold uppercase tracking-wider font-poppins flex items-center space-x-2 text-white">
-              <span>⚡ BEFORE VS. AFTER OPTIMIZATION IMPACT PROJECTION</span>
+              <Zap className="w-4 h-4 text-yellow-400" />
+              <span>BEFORE VS AFTER OPTIMIZATION IMPACT PROJECTION</span>
             </h2>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               RoamWork Guaranteed Targets
@@ -206,7 +223,7 @@ export default function AuditReportPage() {
               <span className="text-[10px] font-bold text-slate-300 uppercase block font-poppins">Mobile PageSpeed</span>
               <div className="flex justify-center items-center space-x-2 mt-1 font-poppins">
                 <span className="text-red-400 font-extrabold text-base sm:text-lg">{perfScore}</span>
-                <span className="text-emerald-400 font-bold text-base sm:text-lg">➔ 94 / 100</span>
+                <span className="text-emerald-400 font-bold text-base sm:text-lg">Target: 94 / 100</span>
               </div>
               <span className="text-[9px] text-emerald-300 font-medium block mt-1">+176% Speed Acceleration</span>
             </div>
@@ -215,7 +232,7 @@ export default function AuditReportPage() {
               <span className="text-[10px] font-bold text-slate-300 uppercase block font-poppins">Mobile Load Delay</span>
               <div className="flex justify-center items-center space-x-2 mt-1 font-poppins">
                 <span className="text-red-400 font-extrabold text-base sm:text-lg">{loadTime}</span>
-                <span className="text-emerald-400 font-bold text-base sm:text-lg">➔ 0.9s</span>
+                <span className="text-emerald-400 font-bold text-base sm:text-lg">Target: 0.9s</span>
               </div>
               <span className="text-[9px] text-emerald-300 font-medium block mt-1">-83% Load Delay Cut</span>
             </div>
@@ -224,7 +241,7 @@ export default function AuditReportPage() {
               <span className="text-[10px] font-bold text-slate-300 uppercase block font-poppins">Total Payload Weight</span>
               <div className="flex justify-center items-center space-x-2 mt-1 font-poppins">
                 <span className="text-red-400 font-extrabold text-base sm:text-lg">{pageWeight}</span>
-                <span className="text-emerald-400 font-bold text-base sm:text-lg">➔ ~1.2 MB</span>
+                <span className="text-emerald-400 font-bold text-base sm:text-lg">Target: ~1.2 MB</span>
               </div>
               <span className="text-[9px] text-emerald-300 font-medium block mt-1">-89% Payload Compression</span>
             </div>
@@ -234,137 +251,73 @@ export default function AuditReportPage() {
         {/* Digital Scorecard Table */}
         <section className="mb-6">
           <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider font-poppins mb-2 border-b border-slate-100 pb-1">
-            DIGITAL SCORECARD
+            DIGITAL AUDIT SCORECARD BREAKDOWN
           </h2>
-          <div className="overflow-hidden border border-slate-200 rounded-xl">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-100 text-slate-700 font-bold font-poppins">
-                <tr>
-                  <th className="p-2.5">Metric Category</th>
-                  <th className="p-2.5">Mobile Status</th>
-                  <th className="p-2.5">Desktop Status</th>
-                  <th className="p-2.5">Signal</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-100 text-slate-700 font-bold font-poppins">
+                  <th className="p-2 border border-slate-200">Category</th>
+                  <th className="p-2 border border-slate-200">Finding / Metric</th>
+                  <th className="p-2 border border-slate-200">Current Status</th>
+                  <th className="p-2 border border-slate-200">Business Impact</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-200 text-[11px] text-slate-700">
                 <tr>
-                  <td className="p-2.5 font-medium">Performance (Google Lighthouse)</td>
-                  <td className="p-2.5">{perfScore}</td>
-                  <td className="p-2.5">64 / 100</td>
-                  <td className="p-2.5 font-bold text-red-600">🔴 POOR</td>
+                  <td className="p-2 border border-slate-200 font-semibold">Core Web Vitals</td>
+                  <td className="p-2 border border-slate-200">Mobile PageSpeed: {perfScore}</td>
+                  <td className="p-2 border border-slate-200 font-bold text-red-600">Critical Delay</td>
+                  <td className="p-2 border border-slate-200">Causes up to 40% bounce rate on ad landing pages</td>
+                </tr>
+                <tr className="bg-slate-50/50">
+                  <td className="p-2 border border-slate-200 font-semibold">Payload Compression</td>
+                  <td className="p-2 border border-slate-200">Page Weight: {pageWeight}</td>
+                  <td className="p-2 border border-slate-200 font-bold text-red-600">Uncompressed Media</td>
+                  <td className="p-2 border border-slate-200">Increases cellular data consumption for mobile users</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-medium">Accessibility (WCAG Compliance)</td>
-                  <td className="p-2.5">{a11yScore}</td>
-                  <td className="p-2.5">72 / 100</td>
-                  <td className="p-2.5 font-bold text-amber-600">🟡 AMBER</td>
+                  <td className="p-2 border border-slate-200 font-semibold">Structured Schema</td>
+                  <td className="p-2 border border-slate-200">LocalBusiness JSON-LD</td>
+                  <td className="p-2 border border-slate-200 font-bold text-amber-600">Missing Markup</td>
+                  <td className="p-2 border border-slate-200">Reduces visibility in Google Maps and AI Search Engine Results</td>
                 </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">SEO & Indexability</td>
-                  <td className="p-2.5">85 / 100</td>
-                  <td className="p-2.5">90 / 100</td>
-                  <td className="p-2.5 font-bold text-emerald-600">🟢 GOOD</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">SSL & HTTPS Hardening</td>
-                  <td className="p-2.5">Active SSL</td>
-                  <td className="p-2.5">Active SSL</td>
-                  <td className="p-2.5 font-bold text-emerald-600">🟢 PASS</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">Security Headers (HSTS, CSP, X-Frame)</td>
-                  <td className="p-2.5">Missing HSTS</td>
-                  <td className="p-2.5">Missing CSP</td>
-                  <td className="p-2.5 font-bold text-red-600">🔴 RISKY</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">Analytics & Conversion Pixel Tracking</td>
-                  <td className="p-2.5">GA4 / Pixel Unverified</td>
-                  <td className="p-2.5">Missing Conversion Tags</td>
-                  <td className="p-2.5 font-bold text-amber-600">🟡 AUDIT NEEDED</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">AI Search Readiness (GEO)</td>
-                  <td className="p-2.5">0/2 Schema</td>
-                  <td className="p-2.5">0/2 Schema</td>
-                  <td className="p-2.5 font-bold text-red-600">🔴 MISSING</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">Lead Funnel & Click-to-Call</td>
-                  <td className="p-2.5">Needs Fix</td>
-                  <td className="p-2.5">Needs Fix</td>
-                  <td className="p-2.5 font-bold text-red-600">🔴 CRITICAL</td>
+                <tr className="bg-slate-50/50">
+                  <td className="p-2 border border-slate-200 font-semibold">Accessibility (WCAG)</td>
+                  <td className="p-2 border border-slate-200">Score: {a11yScore}</td>
+                  <td className="p-2 border border-slate-200 font-bold text-amber-600">Low Contrast Ratio</td>
+                  <td className="p-2 border border-slate-200">Affects user experience for visually impaired users</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        {/* High Impact Quick Wins */}
-        <section className="mb-6">
-          <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider font-poppins mb-2 border-b border-slate-100 pb-1">
-            HIGH-IMPACT QUICK WINS
-          </h2>
-          <div className="overflow-hidden border border-slate-200 rounded-xl">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-100 text-slate-700 font-bold font-poppins">
-                <tr>
-                  <th className="p-2.5">Improvement Action</th>
-                  <th className="p-2.5">Expected Benefit</th>
-                  <th className="p-2.5">Effort</th>
-                  <th className="p-2.5">Priority</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                <tr>
-                  <td className="p-2.5 font-medium">Fix mobile click-to-call & booking form</td>
-                  <td className="p-2.5">Recovers dropped phone & web leads immediately</td>
-                  <td className="p-2.5">&lt; 2 hours</td>
-                  <td className="p-2.5 font-bold text-red-600">High</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">Compress media payload to WebP</td>
-                  <td className="p-2.5">Reduces page weight by ~60%, boosts mobile speed</td>
-                  <td className="p-2.5">Half day</td>
-                  <td className="p-2.5 font-bold text-red-600">High</td>
-                </tr>
-                <tr>
-                  <td className="p-2.5 font-medium">Inject JSON-LD structured schema</td>
-                  <td className="p-2.5">Enables ChatGPT, Gemini & Google AI citation</td>
-                  <td className="p-2.5">1 day</td>
-                  <td className="p-2.5 font-bold text-amber-600">Medium</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Consultation Call & Verified Proof Links Block */}
-        <section className="bg-blue-50 border-2 border-blue-600 p-5 rounded-2xl text-xs space-y-3">
-          <div className="font-bold text-slate-900 uppercase tracking-wider font-poppins text-xs border-b border-blue-200 pb-1.5">
-            CONSULTATION INVITATION & VERIFIED AUDIT PROOFS
-          </div>
-
-          <p className="text-slate-700 leading-relaxed">
-            This audit covers highest-impact findings sourced directly from Google Lighthouse & RoamWork 360° Inspection Engine. Schedule a 15-minute consultation to walk through the complete technical fix plan and delivery timeline.
+        {/* Live PageSpeed Proof Section */}
+        <section className="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <h3 className="font-bold text-xs text-slate-900 font-poppins mb-1">
+            Google Lighthouse Verified Proof Links
+          </h3>
+          <p className="text-[11px] text-slate-600 mb-2">
+            These live PageSpeed analysis reports can be independently verified on Google PageSpeed Insights:
           </p>
-
-          <div className="grid sm:grid-cols-2 gap-3 pt-2 text-[11px] border-t border-blue-200">
-            <div>
-              <span className="font-bold text-slate-900 block font-poppins mb-1">Official Agency Contact (RoamWork Technologies):</span>
-              <div>• <strong>Website:</strong> <a href="https://www.roamwork.in/" target="_blank" className="text-blue-700 underline font-medium">https://www.roamwork.in/</a></div>
-              <div>• <strong>Email:</strong> <a href="mailto:roamwork.techs@gmail.com" className="text-blue-700 underline font-medium">roamwork.techs@gmail.com</a></div>
-              <div>• <strong>WhatsApp:</strong> <a href="https://wa.me/919655798100" target="_blank" className="text-blue-700 underline font-medium">+91 96557 98100</a></div>
-              <div>• <strong>Address:</strong> VOC Street, T.Nagar, Chennai, Tamil Nadu 600017</div>
-            </div>
-
-            <div>
-              <span className="font-bold text-slate-900 block font-poppins mb-1">Direct PageSpeed Audit Proofs:</span>
-              <div>📱 <a href={proofMobile} target="_blank" className="text-blue-700 underline font-medium">Google PageSpeed Mobile Audit Report</a></div>
-              <div>💻 <a href={proofDesktop} target="_blank" className="text-blue-700 underline font-medium">Google PageSpeed Desktop Audit Report</a></div>
-            </div>
+          <div className="space-y-1 text-xs font-mono">
+            <div>Mobile Audit Proof: <a href={proofMobile} target="_blank" className="text-blue-600 underline font-medium">{proofMobile}</a></div>
+            <div>Desktop Audit Proof: <a href={proofDesktop} target="_blank" className="text-blue-600 underline font-medium">{proofDesktop}</a></div>
           </div>
         </section>
+
+        {/* Call to Action Footer */}
+        <div className="border-t-2 border-slate-200 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-600">
+          <div>
+            <span className="font-bold text-slate-900 font-poppins">RoamWork Technologies</span> - Technical and Automation Advisory
+          </div>
+          <div className="flex items-center space-x-4">
+            <a href="https://www.roamwork.in/" target="_blank" className="text-blue-600 underline font-bold">www.roamwork.in</a>
+            <span>roamwork.techs@gmail.com</span>
+            <span>+91 96557 98100</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -2,6 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import {
+  Mail,
+  MessageSquare,
+  Linkedin,
+  Edit3,
+  Save,
+  FileText,
+  Briefcase,
+  BarChart3,
+  Search,
+  Building2,
+  ArrowLeft,
+  ShieldCheck,
+  CheckCircle2,
+  Zap,
+  Globe,
+  DollarSign
+} from 'lucide-react';
 
 export default function ClientsPipelinePage() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -10,9 +28,15 @@ export default function ClientsPipelinePage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ contact_email: '', contact_phone: '', linkedin_url: '' });
+  const [editForm, setEditForm] = useState({ contact_email: '', contact_phone: '', linkedin_url: '', notes: '' });
 
   useEffect(() => {
+    // Admin Security Auth Check
+    const isAuth = typeof window !== 'undefined' && (localStorage.getItem('grie_admin_authenticated') === 'true' || document.cookie.includes('grie_admin_authenticated=true'));
+    if (!isAuth) {
+      window.location.href = 'https://www.roamwork.in/';
+      return;
+    }
     fetchLeads();
   }, []);
 
@@ -35,7 +59,8 @@ export default function ClientsPipelinePage() {
     setEditForm({
       contact_email: lead.contact_email || '',
       contact_phone: lead.contact_phone || '',
-      linkedin_url: lead.linkedin_url || ''
+      linkedin_url: lead.linkedin_url || '',
+      notes: lead.notes || ''
     });
   };
 
@@ -55,7 +80,8 @@ export default function ClientsPipelinePage() {
           drafts: updatedDrafts,
           contact_email: editForm.contact_email,
           contact_phone: editForm.contact_phone,
-          linkedin_url: editForm.linkedin_url
+          linkedin_url: editForm.linkedin_url,
+          notes: editForm.notes
         })
       });
 
@@ -142,7 +168,8 @@ export default function ClientsPipelinePage() {
       (l.contact_email || '').toLowerCase().includes(query) ||
       (l.country || '').toLowerCase().includes(query) ||
       (l.tech_stack || '').toLowerCase().includes(query) ||
-      (l.opportunity_type || '').toLowerCase().includes(query);
+      (l.opportunity_type || '').toLowerCase().includes(query) ||
+      (l.notes || '').toLowerCase().includes(query);
 
     return matchesStage && matchesSearch;
   });
@@ -151,7 +178,7 @@ export default function ClientsPipelinePage() {
     const targetList = onlySelected ? leads.filter(l => selectedIds.includes(l.id)) : filteredLeads;
     if (targetList.length === 0) return alert('No client records to export.');
     
-    const headers = ["ID", "Business Name", "Website URL", "Contact Email", "WhatsApp Phone", "LinkedIn URL", "Country", "Tech Stack", "Opportunity Score", "CRM Stage", "Valuation"];
+    const headers = ["ID", "Business Name", "Website URL", "Contact Email", "WhatsApp Phone", "LinkedIn URL", "Country", "Tech Stack", "Opportunity Score", "CRM Stage", "Valuation", "Notes"];
     
     const rows = targetList.map(l => [
       l.id,
@@ -164,7 +191,8 @@ export default function ClientsPipelinePage() {
       `"${(l.tech_stack || '').replace(/"/g, '""')}"`,
       l.score || 90,
       `"${(l.verification_status || '').replace(/"/g, '""')}"`,
-      `"${(l.estimated_project_value || '').replace(/"/g, '""')}"`
+      `"${(l.estimated_project_value || '').replace(/"/g, '""')}"`,
+      `"${(l.notes || '').replace(/"/g, '""')}"`
     ]);
 
     const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -177,7 +205,6 @@ export default function ClientsPipelinePage() {
     document.body.removeChild(link);
   };
 
-  // Compute Pipeline Financial Metrics
   const convertedCount = leads.filter(l => l.verification_status === 'CONVERTED').length;
   const proposalSentCount = leads.filter(l => l.verification_status === 'PROPOSAL_SENT').length;
   const shopifyCount = leads.filter(l => (l.tech_stack || '').includes('Shopify')).length;
@@ -194,13 +221,14 @@ export default function ClientsPipelinePage() {
           </Link>
           <div>
             <h1 className="text-lg sm:text-xl font-extrabold text-white font-poppins tracking-tight flex items-center space-x-2">
-              <span>Client Directory & Financial Revenue Pipeline</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Phase 7 Bulk & Search Engine
+              <span>Client Directory and Pipeline</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                <span>Admin Pipeline System</span>
               </span>
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Instant Live Search, Bulk CRM Stage Manager & Pipeline Valuation Forecasting
+              Targeted Contact Dispatch, Stage Progression and Pipeline Valuation Forecasting
             </p>
           </div>
         </div>
@@ -210,13 +238,15 @@ export default function ClientsPipelinePage() {
             onClick={() => handleExportCSV(false)}
             className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 font-poppins flex items-center justify-center space-x-1.5 active:scale-95"
           >
-            <span>📊 Export All to CSV</span>
+            <BarChart3 className="w-4 h-4" />
+            <span>Export All to CSV</span>
           </button>
           <Link
             href="/"
-            className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition font-poppins border border-slate-700 text-center"
+            className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition font-poppins border border-slate-700 text-center flex items-center justify-center space-x-1.5"
           >
-            ← Back to Queue
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Queue</span>
           </Link>
         </div>
       </header>
@@ -243,7 +273,7 @@ export default function ClientsPipelinePage() {
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl shadow-lg backdrop-blur-md">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Proposals & Closed Deals</span>
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Proposals and Closed Deals</span>
             <div className="flex justify-between items-baseline mt-2">
               <span className="text-2xl font-extrabold text-white font-poppins">{proposalSentCount} <span className="text-xs text-slate-500 font-normal">Sent</span> / {convertedCount} <span className="text-xs text-emerald-400 font-bold">Closed</span></span>
               <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Closing Pipeline</span>
@@ -254,9 +284,9 @@ export default function ClientsPipelinePage() {
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block font-poppins">Framework Distribution</span>
             <div className="flex justify-between items-baseline mt-2 text-xs font-bold text-slate-200">
               <span>Shopify ({shopifyCount})</span>
-              <span>•</span>
+              <span>-</span>
               <span>WP ({wordpressCount})</span>
-              <span>•</span>
+              <span>-</span>
               <span>Next.js ({nextjsCount})</span>
             </div>
           </div>
@@ -264,23 +294,22 @@ export default function ClientsPipelinePage() {
 
         {/* Real-Time Search & Stage Filter Bar */}
         <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-          {/* Instant Search Bar */}
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="🔍 Instant Search by business name, domain, email, country, or tech stack (e.g. 'Shopify', 'Chennai')..."
+              placeholder="Search by business name, domain, email, country, or tech stack..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-10 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             {searchTerm && (
               <button onClick={() => setSearchTerm('')} className="absolute right-3 top-2 text-slate-400 hover:text-white text-xs font-bold">
-                ✕ Clear
+                Clear
               </button>
             )}
           </div>
 
-          {/* Stage Tabs */}
           <div className="flex space-x-1.5 overflow-x-auto">
             {['ALL', 'PENDING_VERIFICATION', 'VERIFIED_APPROVED', 'CONTACTED', 'PROPOSAL_SENT', 'CONVERTED'].map(stage => {
               const stageLabels: any = {
@@ -306,9 +335,9 @@ export default function ClientsPipelinePage() {
           </div>
         </div>
 
-        {/* BULK ACTIONS TOOLBAR (Appears when checkboxes are selected) */}
+        {/* BULK ACTIONS TOOLBAR */}
         {selectedIds.length > 0 && (
-          <div className="bg-gradient-to-r from-indigo-900/90 to-blue-900/90 p-4 rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-2xl animate-fade-in">
+          <div className="bg-gradient-to-r from-indigo-900/90 to-blue-900/90 p-4 rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-2xl">
             <div className="text-xs font-bold text-white font-poppins flex items-center space-x-2">
               <span className="bg-indigo-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">{selectedIds.length}</span>
               <span>Client(s) Selected for Bulk Operation</span>
@@ -370,9 +399,10 @@ export default function ClientsPipelinePage() {
                     <th className="p-4">Contact Email</th>
                     <th className="p-4">WhatsApp Phone</th>
                     <th className="p-4">LinkedIn Profile</th>
+                    <th className="p-4">Internal Notes</th>
                     <th className="p-4">CRM Stage</th>
-                    <th className="p-4 text-center">1-Click Direct Outreach</th>
-                    <th className="p-4 text-right">Reports & SOW</th>
+                    <th className="p-4 text-center">Direct Outreach</th>
+                    <th className="p-4 text-right">Reports and SOW</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -383,7 +413,6 @@ export default function ClientsPipelinePage() {
 
                     return (
                       <tr key={lead.id} className={`hover:bg-slate-800/40 transition ${isSelected ? 'bg-blue-900/20' : ''}`}>
-                        {/* Checkbox */}
                         <td className="p-4">
                           <input
                             type="checkbox"
@@ -393,7 +422,6 @@ export default function ClientsPipelinePage() {
                           />
                         </td>
 
-                        {/* Business Info */}
                         <td className="p-4">
                           <span className="font-bold text-white text-sm block font-poppins">{lead.business_name}</span>
                           <a href={lead.website_url} target="_blank" className="text-[11px] text-blue-400 underline font-medium block">
@@ -402,7 +430,6 @@ export default function ClientsPipelinePage() {
                           <span className="text-[10px] text-slate-500">{lead.country} • {lead.tech_stack || 'Commercial Enterprise'}</span>
                         </td>
 
-                        {/* Contact Email */}
                         <td className="p-4">
                           {isEditing ? (
                             <input
@@ -416,7 +443,6 @@ export default function ClientsPipelinePage() {
                           )}
                         </td>
 
-                        {/* WhatsApp Phone */}
                         <td className="p-4">
                           {isEditing ? (
                             <input
@@ -430,7 +456,6 @@ export default function ClientsPipelinePage() {
                           )}
                         </td>
 
-                        {/* LinkedIn Profile */}
                         <td className="p-4">
                           {isEditing ? (
                             <input
@@ -446,7 +471,23 @@ export default function ClientsPipelinePage() {
                           )}
                         </td>
 
-                        {/* Stage Dropdown */}
+                        {/* Internal Agency Notes */}
+                        <td className="p-4 max-w-xs">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              placeholder="Add agency internal notes..."
+                              value={editForm.notes}
+                              onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                              className="bg-slate-950 border border-slate-700 text-white text-xs p-1.5 rounded-lg w-full"
+                            />
+                          ) : (
+                            <span className="text-slate-400 text-[11px] italic truncate block">
+                              {lead.notes || 'No internal notes added.'}
+                            </span>
+                          )}
+                        </td>
+
                         <td className="p-4">
                           <select
                             value={lead.verification_status}
@@ -461,47 +502,46 @@ export default function ClientsPipelinePage() {
                           </select>
                         </td>
 
-                        {/* Direct Outreach Actions */}
-                        <td className="p-4 text-center space-x-2">
-                          {/* 💬 Direct WhatsApp Link to Client */}
+                        <td className="p-4 text-center space-x-1.5">
                           <a
                             href={`https://api.whatsapp.com/send?phone=${cleanPhone(lead.contact_phone || '+919840123456')}&text=${encodeURIComponent(lead.drafts?.whatsapp || `Hi ${lead.business_name} Team! View your Executive Teaser Audit Report: https://roamwork.in`)}`}
                             target="_blank"
                             className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition inline-flex items-center space-x-1 shadow-sm font-poppins"
                             title="Direct Client WhatsApp"
                           >
-                            <span>💬 WhatsApp</span>
+                            <MessageSquare className="w-3 h-3" />
+                            <span>WhatsApp</span>
                           </a>
 
-                          {/* ✉️ Direct Email Link to Client */}
                           <a
                             href={`mailto:${lead.contact_email || `contact@${domain}`}?subject=${encodeURIComponent(`Executive Digital Audit for ${lead.business_name}`)}&body=${encodeURIComponent(lead.drafts?.email || '')}`}
                             className="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition inline-flex items-center space-x-1 shadow-sm font-poppins"
                             title="Direct Client Email"
                           >
-                            <span>✉️ Email</span>
+                            <Mail className="w-3 h-3" />
+                            <span>Email</span>
                           </a>
 
-                          {/* Edit / Save Contact Toggle */}
                           {isEditing ? (
                             <button
                               onClick={() => handleSaveContact(lead.id)}
-                              className="bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition font-poppins"
+                              className="bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition font-poppins inline-flex items-center space-x-1"
                             >
-                              Save
+                              <Save className="w-3 h-3" />
+                              <span>Save</span>
                             </button>
                           ) : (
                             <button
                               onClick={() => handleStartEdit(lead)}
-                              className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold px-2 py-1 rounded-lg transition"
+                              className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold px-2 py-1.5 rounded-lg transition inline-flex items-center space-x-1"
                               title="Edit Contact Credentials"
                             >
-                              ✏️ Edit
+                              <Edit3 className="w-3 h-3" />
+                              <span>Edit</span>
                             </button>
                           )}
                         </td>
 
-                        {/* Teaser PDF & Proposal SOW Links */}
                         <td className="p-4 text-right space-x-1.5">
                           <Link
                             href={`/audits/${domain}`}
