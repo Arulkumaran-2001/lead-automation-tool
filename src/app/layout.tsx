@@ -18,6 +18,11 @@ const inter = Inter({
 export const metadata = {
   title: 'RoamWork OS — Global Lead Generation & 360° Digital Audit Platform',
   description: 'Automated 360° Web & Social Media Audit Engine with Country-Aware Valuation & Multi-Channel Outreach Dispatcher',
+  icons: {
+    icon: '/brand/logo.png',
+    shortcut: '/brand/logo.png',
+    apple: '/brand/logo.png',
+  },
 }
 
 export default function RootLayout({
@@ -27,7 +32,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
-      <body className="font-inter bg-slate-50 text-slate-900 min-h-screen antialiased">
+      <head>
+        <link rel="icon" href="/brand/logo.png" type="image/png" />
+      </head>
+      <body className="font-inter bg-slate-950 text-slate-100 min-h-screen antialiased">
         {children}
       </body>
     </html>

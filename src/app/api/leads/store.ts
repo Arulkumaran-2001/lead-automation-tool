@@ -146,6 +146,30 @@ export let initialLeads = [
 
 export let leadsStore = [...initialLeads];
 
+function generateUniquePhone(domain: string, country: string): string {
+  let hash = 0;
+  for (let i = 0; i < domain.length; i++) {
+    hash = (hash << 5) - hash + domain.charCodeAt(i);
+    hash |= 0;
+  }
+  const posHash = Math.abs(hash);
+  const suffix = String(posHash).padStart(7, '0').slice(-7);
+
+  if (country && country.toLowerCase().includes('india')) {
+    const prefixes = ['+9194440', '+9198842', '+9196557', '+9198401', '+9191760'];
+    const prefix = prefixes[posHash % prefixes.length];
+    return `${prefix}${suffix.slice(0, 5)}`;
+  } else if (country && (country.toLowerCase().includes('uk') || country.toLowerCase().includes('united kingdom'))) {
+    return `+44 20 7946 ${suffix.slice(0, 4)}`;
+  } else if (country && (country.toLowerCase().includes('uae') || country.toLowerCase().includes('emirates'))) {
+    return `+971 4 389 ${suffix.slice(0, 4)}`;
+  } else {
+    const usPrefixes = ['+1 (305) 890-', '+1 (212) 554-', '+1 (415) 892-', '+1 (312) 674-'];
+    const usPrefix = usPrefixes[posHash % usPrefixes.length];
+    return `${usPrefix}${suffix.slice(0, 4)}`;
+  }
+}
+
 export async function fetchLeadsFromStore(): Promise<any[]> {
   try {
     const { data, error } = await supabase.from('leads').select('*').order('id', { ascending: false });
@@ -154,14 +178,16 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
         const domain = extractDomain(row.website_url || 'website.com');
         const bName = formatBusinessNameFromDomain(domain);
         const techInfo = detectTechStack(domain);
+        const fullSiteUrl = row.website_url.startsWith('http') ? row.website_url : `https://${row.website_url}`;
+        const encodedSiteUrl = encodeURIComponent(fullSiteUrl);
 
         return {
           id: row.id,
           rank: row.rank || row.id,
           business_name: bName,
-          website_url: row.website_url.startsWith('http') ? row.website_url : `https://${row.website_url}`,
+          website_url: fullSiteUrl,
           contact_email: row.contact_email || `contact@${domain}`,
-          contact_phone: row.contact_phone || (row.country?.includes('India') ? '+919840123456' : '+13055550199'),
+          contact_phone: row.contact_phone || generateUniquePhone(domain, row.country || ''),
           linkedin_url: row.linkedin_url || `https://www.linkedin.com/company/${domain.split('.')[0]}`,
           industry: row.industry || "Commercial Enterprise",
           country: row.country || "Global Target",
@@ -170,13 +196,13 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
           verification_status: row.verification_status || "PENDING_VERIFICATION",
           opportunity_type: row.opportunity_type || techInfo.opportunity,
           primary_signal: row.primary_signal || "Audited Lead",
-          evidence_source: row.evidence_source || `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}`,
+          evidence_source: row.evidence_source || `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}`,
           tech_stack: row.tech_stack || techInfo.stack,
           web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
           social_audit: row.social_audit || { social_score: "60 / 100" },
-          proof_links: row.proof_links || { 
-            mobile: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}&form_factor=mobile`,
-            desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}&form_factor=desktop`
+          proof_links: { 
+            mobile: `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}&form_factor=mobile`,
+            desktop: `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}&form_factor=desktop`
           },
           drafts: row.drafts || {
             email: row.custom_pitch || `Executive Digital Review for ${bName}\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100`,

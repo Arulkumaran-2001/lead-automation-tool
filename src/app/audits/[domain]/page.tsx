@@ -88,9 +88,10 @@ export default function AuditReportPage() {
   const pageWeight = lead?.web_audit?.page_weight || '~6.8 MB';
   const a11yScore = lead?.web_audit?.a11y || '68 / 100';
 
-  const encodedFullUrl = encodeURIComponent(websiteUrl);
-  const proofMobile = lead?.proof_links?.mobile || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=mobile`;
-  const proofDesktop = lead?.proof_links?.desktop || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=desktop`;
+  const fullTargetUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${cleanDomain}`;
+  const encodedFullUrl = encodeURIComponent(fullTargetUrl);
+  const proofMobile = `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=mobile`;
+  const proofDesktop = `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=desktop`;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-inter p-4 sm:p-8 print:p-0 print:bg-white">
