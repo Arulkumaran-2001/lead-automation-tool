@@ -19,9 +19,9 @@ export const metadata = {
   title: 'RoamWork OS — Global Lead Generation & 360° Digital Audit Platform',
   description: 'Automated 360° Web & Social Media Audit Engine with Country-Aware Valuation & Multi-Channel Outreach Dispatcher',
   icons: {
-    icon: '/brand/logo.png',
-    shortcut: '/brand/logo.png',
-    apple: '/brand/logo.png',
+    icon: '/brand/fav-icon.png',
+    shortcut: '/brand/fav-icon.png',
+    apple: '/brand/fav-icon.png',
   },
 }
 
