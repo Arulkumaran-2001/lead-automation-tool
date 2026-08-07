@@ -16,7 +16,7 @@ const inter = Inter({
 })
 
 export const metadata = {
-  title: 'RoamWork OS — Global Lead Generation & 360° Digital Audit Platform',
+  title: 'RoamWork OS - Global Lead Generation & 360° Digital Audit Platform',
   description: 'Automated 360° Web & Social Media Audit Engine with Country-Aware Valuation & Multi-Channel Outreach Dispatcher',
   icons: {
     icon: '/brand/fav-icon.png',
