@@ -100,75 +100,80 @@ export async function GET() {
   return NextResponse.json({ success: true, leads: leadsStore });
 }
 
+export async function ingestManualAuditLead(body: any) {
+  const urls: string[] = body.urls || (body.url ? [body.url] : []);
+  const country = body.country || "United States";
+  const projectVal = calculateCountryProjectValue(country);
+  
+  let addedCount = 0;
+  const existingDomains = new Set(leadsStore.map(l => extractDomain(l.website_url)));
+  
+  urls.forEach((url) => {
+    if (url.trim()) {
+      const cleanUrl = url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`;
+      const domain = extractDomain(cleanUrl);
+      
+      // DEDUPLICATION CHECK
+      if (!existingDomains.has(domain)) {
+        existingDomains.add(domain);
+        addedCount++;
+        
+        leadsStore.unshift({
+          id: leadsStore.length + 1,
+          rank: leadsStore.length + 1,
+          business_name: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Business`,
+          website_url: cleanUrl,
+          industry: "Commercial Enterprise",
+          country: country,
+          score: 92,
+          estimated_project_value: projectVal,
+          verification_status: "PENDING_VERIFICATION",
+          opportunity_type: "360° Web Speed, UX, Security & Social Media Optimization",
+          primary_signal: "Manually Audited Website — Dual Audit Complete",
+          evidence_source: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
+          web_audit: {
+            perf_mobile: "38 / 100",
+            load_time: "4.5s",
+            page_weight: "~6.8 MB",
+            a11y: "68 / 100",
+            click_to_call: "Checked mobile layout & booking conversion flow",
+            seo_indexing: "Checked title tags & schema tags"
+          },
+          social_audit: {
+            linkedin_status: "Evaluated company profile & service links",
+            instagram_status: "Evaluated bio link & landing page speed",
+            facebook_status: "Evaluated business page & messaging auto-responder",
+            social_score: "60 / 100"
+          },
+          proof_links: {
+            mobile: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
+            desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`
+          },
+          drafts: {
+            email: `Subject: Digital Performance & Audit Findings for ${domain}\n\nDear Team,\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Digital (roamwork.in)`,
+            linkedin: `Hi! We completed a digital review for ${domain} and identified key performance and lead conversion quick wins. Happy to share our Executive Teaser Audit report!`,
+            whatsapp: `Hi ${domain} Team! Here is your 360° Web & Social Media Audit Report: ${cleanUrl}`
+          },
+          pdf_path: "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
+        });
+      }
+    }
+  });
+
+  return {
+    success: true,
+    message: addedCount > 0 ? `Successfully audited & added ${addedCount} new lead(s)` : "Duplicate lead(s) skipped — no fake duplicates added.",
+    leads: leadsStore
+  };
+}
+
 export async function POST(request: Request) {
   const body = await request.json();
   
   // MANUAL URL AUDIT / INGESTION WITH DEDUPLICATION & COUNTRY PRICING
   if (body.action === 'MANUAL_AUDIT' || body.action === 'BATCH_INGEST') {
-    const urls: string[] = body.urls || (body.url ? [body.url] : []);
-    const country = body.country || "United States";
-    const projectVal = calculateCountryProjectValue(country);
-    
-    let addedCount = 0;
-    const existingDomains = new Set(leadsStore.map(l => extractDomain(l.website_url)));
-    
-    urls.forEach((url) => {
-      if (url.trim()) {
-        const cleanUrl = url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`;
-        const domain = extractDomain(cleanUrl);
-        
-        // DEDUPLICATION CHECK
-        if (!existingDomains.has(domain)) {
-          existingDomains.add(domain);
-          addedCount++;
-          
-          leadsStore.unshift({
-            id: leadsStore.length + 1,
-            rank: leadsStore.length + 1,
-            business_name: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Business`,
-            website_url: cleanUrl,
-            industry: "Commercial Enterprise",
-            country: country,
-            score: 92,
-            estimated_project_value: projectVal,
-            verification_status: "PENDING_VERIFICATION",
-            opportunity_type: "360° Web Speed, UX, Security & Social Media Optimization",
-            primary_signal: "Manually Audited Website — Dual Audit Complete",
-            evidence_source: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
-            web_audit: {
-              perf_mobile: "38 / 100",
-              load_time: "4.5s",
-              page_weight: "~6.8 MB",
-              a11y: "68 / 100",
-              click_to_call: "Checked mobile layout & booking conversion flow",
-              seo_indexing: "Checked title tags & schema tags"
-            },
-            social_audit: {
-              linkedin_status: "Evaluated company profile & service links",
-              instagram_status: "Evaluated bio link & landing page speed",
-              facebook_status: "Evaluated business page & messaging auto-responder",
-              social_score: "60 / 100"
-            },
-            proof_links: {
-              mobile: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
-              desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`
-            },
-            drafts: {
-              email: `Subject: Digital Performance & Audit Findings for ${domain}\n\nDear Team,\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Digital (roamwork.in)`,
-              linkedin: `Hi! We completed a digital review for ${domain} and identified key performance and lead conversion quick wins. Happy to share our Executive Teaser Audit report!`,
-              whatsapp: `Hi ${domain} Team! Here is your 360° Web & Social Media Audit Report: ${cleanUrl}`
-            },
-            pdf_path: "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
-          });
-        }
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: addedCount > 0 ? `Successfully audited & added ${addedCount} new lead(s)` : "Duplicate lead(s) skipped — no fake duplicates added.",
-      leads: leadsStore
-    });
+    const result = await ingestManualAuditLead(body);
+    return NextResponse.json(result);
   }
 
   const { id, verification_status, drafts } = body;

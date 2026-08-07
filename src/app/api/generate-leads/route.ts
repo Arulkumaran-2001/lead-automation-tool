@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { calculateCountryProjectValue } from '../leads/route';
+import { ingestManualAuditLead, calculateCountryProjectValue } from '../leads/route';
 
 // Real-world candidate pools across global markets
 const liveCandidatePool = [
@@ -42,19 +42,15 @@ export async function POST() {
   const randomCandidate = liveCandidatePool[Math.floor(Math.random() * liveCandidatePool.length)];
   const projectVal = calculateCountryProjectValue(randomCandidate.country);
 
-  const res = await fetch("http://localhost:3000/api/leads", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "MANUAL_AUDIT",
-      url: randomCandidate.website_url,
-      country: randomCandidate.country
-    })
-  }).catch(() => null);
+  const result = await ingestManualAuditLead({
+    action: "MANUAL_AUDIT",
+    url: randomCandidate.website_url,
+    country: randomCandidate.country
+  });
 
   return NextResponse.json({
-    success: true,
-    message: "1-Click Lead Generation Triggered — Fresh Real-World Lead Audited & Appended",
+    success: result.success,
+    message: result.message,
     candidate_added: randomCandidate
   });
 }
