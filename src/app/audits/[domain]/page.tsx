@@ -66,13 +66,20 @@ export default function AuditReportPage() {
     );
   }
 
-  const formatName = (domainStr: string) => {
-    const namePart = domainStr.split('.')[0];
+  const formatBusinessName = (domainStr: string, existingName?: string) => {
+    if (existingName && !existingName.toLowerCase().includes('.in business') && !existingName.toLowerCase().includes('.shop business') && !existingName.toLowerCase().includes('.com business') && !existingName.endsWith(' Business') && !existingName.endsWith(' Enterprise')) {
+      return existingName;
+    }
+    const cleanDomainStr = domainStr.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const namePart = cleanDomainStr.replace(/\.(com|in|shop|org|net|co|io|tech|app|xyz|online|store|dev|gov|edu|me|biz)(\.[a-z]{2})?$/i, '');
+    if (namePart === 'roamwork') return 'RoamWork Technologies';
+    if (namePart === 'rrdentalhospital') return 'RR Dental Hospital';
+    if (namePart === 'zadescoxp') return 'Zadescoxp D2C';
     const spaced = namePart.replace(/[-_]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
     return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
-  const businessName = (lead?.business_name && !lead.business_name.includes('.shop Business')) ? lead.business_name : formatName(cleanDomain);
+  const businessName = formatBusinessName(cleanDomain, lead?.business_name);
   const websiteUrl = lead?.website_url || `https://${cleanDomain}`;
   const perfScore = lead?.web_audit?.perf_mobile || '38 / 100';
   const loadTime = lead?.web_audit?.load_time || '4.5s';

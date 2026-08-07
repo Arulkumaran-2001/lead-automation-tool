@@ -23,7 +23,11 @@ export function extractDomain(url: string): string {
 
 export function formatBusinessNameFromDomain(domain: string): string {
   if (!domain) return 'Client Business';
-  const namePart = domain.split('.')[0];
+  const cleanDomainStr = domain.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  const namePart = cleanDomainStr.replace(/\.(com|in|shop|org|net|co|io|tech|app|xyz|online|store|dev|gov|edu|me|biz)(\.[a-z]{2})?$/i, '');
+  if (namePart === 'roamwork') return 'RoamWork Technologies';
+  if (namePart === 'rrdentalhospital') return 'RR Dental Hospital';
+  if (namePart === 'zadescoxp') return 'Zadescoxp D2C';
   const spaced = namePart.replace(/[-_]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
   return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
