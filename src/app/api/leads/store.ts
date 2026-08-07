@@ -50,11 +50,11 @@ export let initialLeads = [
       desktop: "https://pagespeed.web.dev/analysis/https-rrdentalhospital-com/frwn6p4niq?form_factor=desktop"
     },
     drafts: {
-      email: "Subject: Executive Digital & Performance Review for RR Dental Hospital\n\nDear Leadership Team,\n\nWe completed a comprehensive digital audit of rrdentalhospital.com and identified critical performance bottlenecks (34/100 mobile PageSpeed score, 5.4s load time, 11MB transfer weight) and a mobile phone link mismatch affecting appointment bookings.\n\nWe also evaluated your social media channels and noticed opportunities to align your Instagram/LinkedIn traffic with a high-converting direct booking funnel.\n\nAttached is our 2-page Executive Teaser Audit. Would you be open to a 15-minute consultation call this week?\n\nBest regards,\nRoamWork Digital (roamwork.in)",
-      linkedin: "Hi! Reaching out regarding RR Dental Hospital's digital presence. We ran a 360° technical and social media audit on rrdentalhospital.com. We discovered quick wins for mobile speed (currently 34/100) and patient booking lead conversion. Here is the direct PageSpeed proof link: https://pagespeed.web.dev/analysis/https-rrdentalhospital-com/frwn6p4niq?form_factor=mobile. Happy to share our 2-page Teaser Audit PDF if you're open to reviewing it!",
-      whatsapp: "Hi RR Dental Hospital Team! We conducted a digital audit of rrdentalhospital.com and identified 3 critical fixes: 1) Mobile PageSpeed is 34/100 with a 5.4s load delay, 2) Click-to-call link has a phone number mismatch, and 3) Social media traffic is dropping off on mobile. View our Executive Teaser Audit PDF: /audits/RR_Dental_Hospital_Teaser_Audit.pdf"
+      email: "Subject: Executive Digital & Performance Review for RR Dental Hospital\n\nDear Leadership Team,\n\nWe completed a comprehensive digital audit of rrdentalhospital.com and identified critical performance bottlenecks (34/100 mobile PageSpeed score, 5.4s load time, 11MB transfer weight) and a mobile phone link mismatch affecting appointment bookings.\n\nAttached is our Executive Teaser Audit report.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nVOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
+      linkedin: "Hi! Reaching out from RoamWork Technologies (https://www.roamwork.in/). We ran a 360° technical and social media audit on rrdentalhospital.com. We discovered quick wins for mobile speed (currently 34/100) and patient booking lead conversion. Happy to share our Executive Teaser Audit report!",
+      whatsapp: "Hi RR Dental Hospital Team! This is RoamWork Technologies (https://www.roamwork.in/). View your 360° Digital Audit Report: https://rrdentalhospital.com | Contact us: +91 96557 98100 / roamwork.techs@gmail.com"
     },
-    pdf_path: "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
+    pdf_path: "/audits/rrdentalhospital.com"
   },
   {
     id: 2,
@@ -88,11 +88,11 @@ export let initialLeads = [
       desktop: "https://pagespeed.web.dev/analysis/https-zadescoxp-com/desktop"
     },
     drafts: {
-      email: "Subject: Technical & Conversion Audit for zadescoxp.com\n\nHi Team,\n\nWe ran a 360° technical and social media audit on zadescoxp.com. We discovered a mobile scroll bug where product images overflow on 375px screens, alongside a 3.8s LCP load delay that is affecting paid ad conversions.\n\nWe compiled a 2-page Teaser Audit detailing the exact fixes for mobile speed, Liquid code cleanup, and shoppable social integration.\n\nBest regards,\nRoamWork Digital",
-      linkedin: "Hi! Saw your request regarding e-commerce SEO and performance tuning. We audited zadescoxp.com and identified mobile layout overflow bugs and Core Web Vitals quick wins that can boost mobile conversion rates by 20%+. Let me know if you'd like to see our Executive Teaser Audit PDF!",
-      whatsapp: "Hi Zadescoxp Team! I noticed a mobile layout overflow bug on 375px screens on zadescoxp.com alongside a 3.8s mobile load time. Here is our Executive Teaser Audit report with quick fixes: /audits/rrdentalhospital_com_Teaser_Audit.pdf"
+      email: "Subject: Technical & Conversion Audit for zadescoxp.com\n\nHi Team,\n\nWe ran a 360° technical and social media audit on zadescoxp.com. We discovered a mobile scroll bug where product images overflow on 375px screens, alongside a 3.8s LCP load delay affecting paid ad conversions.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nVOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
+      linkedin: "Hi! Saw your request regarding e-commerce SEO and performance tuning. We audited zadescoxp.com and identified Core Web Vitals quick wins. Let me know if you'd like to see our Executive Teaser Audit PDF!",
+      whatsapp: "Hi Zadescoxp Team! This is RoamWork Technologies (https://www.roamwork.in/). Here is your 360° Performance Audit report: https://zadescoxp.com | Contact us: +91 96557 98100 / roamwork.techs@gmail.com"
     },
-    pdf_path: "/audits/rrdentalhospital_com_Teaser_Audit.pdf"
+    pdf_path: "/audits/zadescoxp.com"
   }
 ];
 
@@ -103,29 +103,32 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
     const { data, error } = await supabase.from('leads').select('*').order('id', { ascending: false });
     if (!error && data && data.length > 0) {
       // Map DB schema to GRIE format
-      const formatted = data.map((row: any) => ({
-        id: row.id,
-        rank: row.rank || row.id,
-        business_name: row.business_name,
-        website_url: row.website_url,
-        industry: row.industry || "Commercial Enterprise",
-        country: row.country || "Global Target",
-        score: row.score || 90,
-        estimated_project_value: row.estimated_project_value || calculateCountryProjectValue(row.country),
-        verification_status: row.verification_status || "PENDING_VERIFICATION",
-        opportunity_type: row.opportunity_type || "360° Digital Growth & Speed Fix",
-        primary_signal: row.primary_signal || "Audited Lead",
-        evidence_source: row.evidence_source || row.website_url,
-        web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
-        social_audit: row.social_audit || { social_score: "60 / 100" },
-        proof_links: row.proof_links || { mobile: row.website_url, desktop: row.website_url },
-        drafts: row.drafts || {
-          email: row.custom_pitch || `Executive Digital Review for ${row.business_name}`,
-          linkedin: `Digital audit findings for ${row.business_name}`,
-          whatsapp: `360 Audit Report: ${row.website_url}`
-        },
-        pdf_path: row.pdf_path || row.pdf_drive_url || "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
-      }));
+      const formatted = data.map((row: any) => {
+        const domain = extractDomain(row.website_url || 'website.com');
+        return {
+          id: row.id,
+          rank: row.rank || row.id,
+          business_name: row.business_name,
+          website_url: row.website_url,
+          industry: row.industry || "Commercial Enterprise",
+          country: row.country || "Global Target",
+          score: row.score || 90,
+          estimated_project_value: row.estimated_project_value || calculateCountryProjectValue(row.country),
+          verification_status: row.verification_status || "PENDING_VERIFICATION",
+          opportunity_type: row.opportunity_type || "360° Digital Growth & Speed Fix",
+          primary_signal: row.primary_signal || "Audited Lead",
+          evidence_source: row.evidence_source || row.website_url,
+          web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
+          social_audit: row.social_audit || { social_score: "60 / 100" },
+          proof_links: row.proof_links || { mobile: row.website_url, desktop: row.website_url },
+          drafts: row.drafts || {
+            email: row.custom_pitch || `Executive Digital Review for ${row.business_name}\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100`,
+            linkedin: `Hi! We completed a digital review for ${row.business_name}. RoamWork Technologies (https://www.roamwork.in/)`,
+            whatsapp: `Hi ${row.business_name} Team! Here is your 360° Web Audit Report from RoamWork Technologies (https://www.roamwork.in/): ${row.website_url}`
+          },
+          pdf_path: `/audits/${domain}`
+        };
+      });
       leadsStore = formatted;
       return formatted;
     }
@@ -201,11 +204,11 @@ export async function ingestManualAuditLead(body: any) {
             desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`
           },
           drafts: {
-            email: `Subject: Digital Performance & Audit Findings for ${domain}\n\nDear Team,\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Digital (roamwork.in)`,
-            linkedin: `Hi! We completed a digital review for ${domain} and identified key performance and lead conversion quick wins. Happy to share our Executive Teaser Audit report!`,
-            whatsapp: `Hi ${domain} Team! Here is your 360° Web & Social Media Audit Report: ${cleanUrl}`
+            email: `Subject: Digital Performance & Audit Findings for ${domain}\n\nDear Team,\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nAddress: VOC Street, T.Nagar, Chennai, Tamil Nadu 600017`,
+            linkedin: `Hi! We completed a digital review for ${domain} at RoamWork Technologies (https://www.roamwork.in/). Happy to share our Executive Teaser Audit report!`,
+            whatsapp: `Hi ${domain} Team! This is RoamWork Technologies (https://www.roamwork.in/). Here is your 360° Web & Social Media Audit Report: ${cleanUrl} | Contact us: +91 96557 98100`
           },
-          pdf_path: "/audits/RR_Dental_Hospital_Teaser_Audit.pdf"
+          pdf_path: `/audits/${domain}`
         };
 
         leadsStore.unshift(newLead);
@@ -221,7 +224,16 @@ export async function ingestManualAuditLead(body: any) {
             primary_signal: newLead.primary_signal,
             evidence_source: newLead.evidence_source,
             custom_pitch: newLead.drafts.email,
-            pdf_drive_url: newLead.pdf_path
+            pdf_drive_url: newLead.pdf_path,
+            industry: newLead.industry,
+            country: newLead.country,
+            estimated_project_value: newLead.estimated_project_value,
+            opportunity_type: newLead.opportunity_type,
+            web_audit: newLead.web_audit,
+            social_audit: newLead.social_audit,
+            proof_links: newLead.proof_links,
+            drafts: newLead.drafts,
+            pdf_path: newLead.pdf_path
           }]);
         } catch (dbErr) {
           console.error('Supabase write notice:', dbErr);

@@ -124,7 +124,7 @@ export default function Dashboard() {
 
       if (channel === 'WHATSAPP') {
         const text = encodeURIComponent(draftContent);
-        window.open(`https://wa.me/?text=${text}`, '_blank');
+        window.open(`https://wa.me/919655798100?text=${text}`, '_blank');
       } else if (channel === 'GMAIL') {
         const subject = encodeURIComponent(`Executive Teaser Audit for ${selectedLead.business_name}`);
         const body = encodeURIComponent(draftContent);
