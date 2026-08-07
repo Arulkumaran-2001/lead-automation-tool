@@ -7,6 +7,8 @@ export default function ClientsPipelinePage() {
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStage, setFilterStage] = useState<string>('ALL');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ contact_email: '', contact_phone: '', linkedin_url: '' });
 
@@ -85,21 +87,73 @@ export default function ClientsPipelinePage() {
     }
   };
 
+  const handleBulkStageChange = async (newStage: string) => {
+    if (selectedIds.length === 0) return;
+    try {
+      for (const id of selectedIds) {
+        const leadObj = leads.find(l => l.id === id);
+        if (leadObj) {
+          await fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id,
+              verification_status: newStage,
+              drafts: leadObj.drafts
+            })
+          });
+        }
+      }
+      setSelectedIds([]);
+      await fetchLeads();
+    } catch (err) {
+      alert('Failed to execute bulk stage update');
+    }
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedIds.length === filteredLeads.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredLeads.map(l => l.id));
+    }
+  };
+
+  const handleToggleSelect = (id: number) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
   const cleanPhone = (phoneStr: string) => {
     return (phoneStr || '').replace(/[^\d+]/g, '');
   };
 
   const filteredLeads = leads.filter(l => {
-    if (filterStage === 'ALL') return true;
-    return l.verification_status === filterStage;
+    const matchesStage = filterStage === 'ALL' || l.verification_status === filterStage;
+    const query = searchTerm.toLowerCase().trim();
+    if (!query) return matchesStage;
+    
+    const matchesSearch = 
+      (l.business_name || '').toLowerCase().includes(query) ||
+      (l.website_url || '').toLowerCase().includes(query) ||
+      (l.contact_email || '').toLowerCase().includes(query) ||
+      (l.country || '').toLowerCase().includes(query) ||
+      (l.tech_stack || '').toLowerCase().includes(query) ||
+      (l.opportunity_type || '').toLowerCase().includes(query);
+
+    return matchesStage && matchesSearch;
   });
 
-  const handleExportCSV = () => {
-    if (filteredLeads.length === 0) return alert('No client records to export.');
+  const handleExportCSV = (onlySelected = false) => {
+    const targetList = onlySelected ? leads.filter(l => selectedIds.includes(l.id)) : filteredLeads;
+    if (targetList.length === 0) return alert('No client records to export.');
     
     const headers = ["ID", "Business Name", "Website URL", "Contact Email", "WhatsApp Phone", "LinkedIn URL", "Country", "Tech Stack", "Opportunity Score", "CRM Stage", "Valuation"];
     
-    const rows = filteredLeads.map(l => [
+    const rows = targetList.map(l => [
       l.id,
       `"${(l.business_name || '').replace(/"/g, '""')}"`,
       `"${(l.website_url || '').replace(/"/g, '""')}"`,
@@ -124,7 +178,6 @@ export default function ClientsPipelinePage() {
   };
 
   // Compute Pipeline Financial Metrics
-  const totalLeadsCount = leads.length;
   const convertedCount = leads.filter(l => l.verification_status === 'CONVERTED').length;
   const proposalSentCount = leads.filter(l => l.verification_status === 'PROPOSAL_SENT').length;
   const shopifyCount = leads.filter(l => (l.tech_stack || '').includes('Shopify')).length;
@@ -143,21 +196,21 @@ export default function ClientsPipelinePage() {
             <h1 className="text-lg sm:text-xl font-extrabold text-white font-poppins tracking-tight flex items-center space-x-2">
               <span>Client Directory & Financial Revenue Pipeline</span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Phase 6 Financial Engine
+                Phase 7 Bulk & Search Engine
               </span>
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Targeted Contact Dispatch, Stage Progression & Pipeline Valuation Forecasting
+              Instant Live Search, Bulk CRM Stage Manager & Pipeline Valuation Forecasting
             </p>
           </div>
         </div>
 
         <div className="flex space-x-3 w-full sm:w-auto">
           <button
-            onClick={handleExportCSV}
+            onClick={() => handleExportCSV(false)}
             className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 font-poppins flex items-center justify-center space-x-1.5 active:scale-95"
           >
-            <span>📊 Export to CSV</span>
+            <span>📊 Export All to CSV</span>
           </button>
           <Link
             href="/"
@@ -208,15 +261,32 @@ export default function ClientsPipelinePage() {
             </div>
           </div>
         </div>
-        
-        {/* Stage Filter Tabs */}
-        <div className="flex justify-between items-center bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-          <div className="flex space-x-2 overflow-x-auto">
+
+        {/* Real-Time Search & Stage Filter Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+          {/* Instant Search Bar */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="🔍 Instant Search by business name, domain, email, country, or tech stack (e.g. 'Shopify', 'Chennai')..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm('')} className="absolute right-3 top-2 text-slate-400 hover:text-white text-xs font-bold">
+                ✕ Clear
+              </button>
+            )}
+          </div>
+
+          {/* Stage Tabs */}
+          <div className="flex space-x-1.5 overflow-x-auto">
             {['ALL', 'PENDING_VERIFICATION', 'VERIFIED_APPROVED', 'CONTACTED', 'PROPOSAL_SENT', 'CONVERTED'].map(stage => {
               const stageLabels: any = {
-                ALL: 'All Clients',
-                PENDING_VERIFICATION: 'Pending Audit',
-                VERIFIED_APPROVED: 'Outreach Approved',
+                ALL: 'All',
+                PENDING_VERIFICATION: 'Pending',
+                VERIFIED_APPROVED: 'Approved',
                 CONTACTED: 'Contacted',
                 PROPOSAL_SENT: 'Proposal Sent',
                 CONVERTED: 'Converted'
@@ -225,7 +295,7 @@ export default function ClientsPipelinePage() {
                 <button
                   key={stage}
                   onClick={() => setFilterStage(stage)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition font-poppins ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition font-poppins whitespace-nowrap ${
                     filterStage === stage ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                   }`}
                 >
@@ -234,11 +304,50 @@ export default function ClientsPipelinePage() {
               );
             })}
           </div>
-
-          <div className="text-xs text-slate-400 font-semibold">
-            Total Listed: <span className="text-white font-bold">{filteredLeads.length}</span>
-          </div>
         </div>
+
+        {/* BULK ACTIONS TOOLBAR (Appears when checkboxes are selected) */}
+        {selectedIds.length > 0 && (
+          <div className="bg-gradient-to-r from-indigo-900/90 to-blue-900/90 p-4 rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-2xl animate-fade-in">
+            <div className="text-xs font-bold text-white font-poppins flex items-center space-x-2">
+              <span className="bg-indigo-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">{selectedIds.length}</span>
+              <span>Client(s) Selected for Bulk Operation</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => handleBulkStageChange('VERIFIED_APPROVED')}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition font-poppins"
+              >
+                Mark Approved
+              </button>
+              <button
+                onClick={() => handleBulkStageChange('CONTACTED')}
+                className="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition font-poppins"
+              >
+                Mark Contacted
+              </button>
+              <button
+                onClick={() => handleBulkStageChange('PROPOSAL_SENT')}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition font-poppins"
+              >
+                Mark Proposal Sent
+              </button>
+              <button
+                onClick={() => handleBulkStageChange('CONVERTED')}
+                className="bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition font-poppins"
+              >
+                Mark Converted
+              </button>
+              <button
+                onClick={() => handleExportCSV(true)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold px-3 py-1.5 rounded-xl transition font-poppins border border-slate-700"
+              >
+                Export Selected CSV
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Client Directory Table */}
         <div className="bg-slate-900/60 rounded-2xl border border-slate-800/80 shadow-2xl overflow-hidden backdrop-blur-md">
@@ -249,6 +358,14 @@ export default function ClientsPipelinePage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-900 text-slate-300 font-bold uppercase tracking-wider font-poppins border-b border-slate-800">
                   <tr>
+                    <th className="p-4 w-10">
+                      <input
+                        type="checkbox"
+                        checked={filteredLeads.length > 0 && selectedIds.length === filteredLeads.length}
+                        onChange={handleToggleSelectAll}
+                        className="rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                    </th>
                     <th className="p-4">Target Business</th>
                     <th className="p-4">Contact Email</th>
                     <th className="p-4">WhatsApp Phone</th>
@@ -262,9 +379,20 @@ export default function ClientsPipelinePage() {
                   {filteredLeads.map(lead => {
                     const domain = lead.website_url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
                     const isEditing = editingId === lead.id;
+                    const isSelected = selectedIds.includes(lead.id);
 
                     return (
-                      <tr key={lead.id} className="hover:bg-slate-800/40 transition">
+                      <tr key={lead.id} className={`hover:bg-slate-800/40 transition ${isSelected ? 'bg-blue-900/20' : ''}`}>
+                        {/* Checkbox */}
+                        <td className="p-4">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleToggleSelect(lead.id)}
+                            className="rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+
                         {/* Business Info */}
                         <td className="p-4">
                           <span className="font-bold text-white text-sm block font-poppins">{lead.business_name}</span>
