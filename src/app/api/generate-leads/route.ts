@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ingestManualAuditLead, calculateCountryProjectValue } from '../leads/route';
+import { ingestManualAuditLead, calculateCountryProjectValue } from '../leads/store';
 
 // Real-world candidate pools across global markets
 const liveCandidatePool = [
