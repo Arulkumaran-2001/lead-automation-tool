@@ -218,6 +218,24 @@ export default function AuditReportPage() {
                   <td className="p-2.5 font-bold text-emerald-600">🟢 GOOD</td>
                 </tr>
                 <tr>
+                  <td className="p-2.5 font-medium">SSL & HTTPS Hardening</td>
+                  <td className="p-2.5">Active SSL</td>
+                  <td className="p-2.5">Active SSL</td>
+                  <td className="p-2.5 font-bold text-emerald-600">🟢 PASS</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-medium">Security Headers (HSTS, CSP, X-Frame)</td>
+                  <td className="p-2.5">Missing HSTS</td>
+                  <td className="p-2.5">Missing CSP</td>
+                  <td className="p-2.5 font-bold text-red-600">🔴 RISKY</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-medium">Analytics & Conversion Pixel Tracking</td>
+                  <td className="p-2.5">GA4 / Pixel Unverified</td>
+                  <td className="p-2.5">Missing Conversion Tags</td>
+                  <td className="p-2.5 font-bold text-amber-600">🟡 AUDIT NEEDED</td>
+                </tr>
+                <tr>
                   <td className="p-2.5 font-medium">AI Search Readiness (GEO)</td>
                   <td className="p-2.5">0/2 Schema</td>
                   <td className="p-2.5">0/2 Schema</td>

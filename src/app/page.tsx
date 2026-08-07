@@ -373,14 +373,23 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  {/* READY TO SHARE TEASER PDF BUTTON */}
-                  <a
-                    href={selectedLead.pdf_path}
-                    target="_blank"
-                    className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold px-3.5 py-2 rounded-xl border border-blue-500/30 transition flex items-center space-x-1.5 font-poppins shadow-sm"
-                  >
-                    <span>📄 Executive Teaser PDF</span>
-                  </a>
+                  {/* READY TO SHARE TEASER PDF & PROPOSAL BUTTONS */}
+                  <div className="flex space-x-2">
+                    <a
+                      href={selectedLead.pdf_path}
+                      target="_blank"
+                      className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold px-3 py-2 rounded-xl border border-blue-500/30 transition flex items-center space-x-1 font-poppins shadow-sm"
+                    >
+                      <span>📄 Teaser PDF</span>
+                    </a>
+                    <a
+                      href={`/proposals/${selectedLead.pdf_path.replace('/audits/', '')}`}
+                      target="_blank"
+                      className="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold px-3 py-2 rounded-xl border border-indigo-500/30 transition flex items-center space-x-1 font-poppins shadow-sm"
+                    >
+                      <span>💼 Proposal & SOW</span>
+                    </a>
+                  </div>
                 </div>
 
                 {/* Audit Tabs (Web vs Social vs AI Opps) */}
