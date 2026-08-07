@@ -260,7 +260,7 @@ export default function ProposalPage() {
             4. Service Level Agreement and Guarantee
           </h2>
           <p className="text-xs text-slate-700 leading-relaxed">
-            RoamWork Technologies guarantees a minimum 30% improvement in mobile PageSpeed performance score and full WCAG accessibility compliance upon completion. All source code and intellectual property will be fully owned by <strong>{businessName}</strong>.
+            RoamWork Technologies guarantees a minimum 30% improvement in mobile PageSpeed performance score and full WCAG accessibility compliance upon completion. All custom source code, engineering deliverables, and intellectual property created under this agreement will be <strong>100% owned by {businessName}</strong> upon completion of final milestone payment.
           </p>
         </section>
 

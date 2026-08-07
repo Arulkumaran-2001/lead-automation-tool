@@ -81,12 +81,13 @@ export default function AuditReportPage() {
     );
   }
 
+  const isRoamWorkDomain = cleanDomain.includes('roamwork');
   const businessName = formatBusinessName(cleanDomain, lead?.business_name);
   const websiteUrl = lead?.website_url || `https://${cleanDomain}`;
-  const perfScore = lead?.web_audit?.perf_mobile || '38 / 100';
-  const loadTime = lead?.web_audit?.load_time || '4.5s';
-  const pageWeight = lead?.web_audit?.page_weight || '~6.8 MB';
-  const a11yScore = lead?.web_audit?.a11y || '68 / 100';
+  const perfScore = lead?.web_audit?.perf_mobile || (isRoamWorkDomain ? '95 / 100' : '38 / 100');
+  const loadTime = lead?.web_audit?.load_time || (isRoamWorkDomain ? '0.9s' : '4.5s');
+  const pageWeight = lead?.web_audit?.page_weight || (isRoamWorkDomain ? '~1.1 MB' : '~6.8 MB');
+  const a11yScore = lead?.web_audit?.a11y || (isRoamWorkDomain ? '97 / 100' : '68 / 100');
 
   const fullTargetUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${cleanDomain}`;
   const encodedFullUrl = encodeURIComponent(fullTargetUrl);
@@ -305,6 +306,42 @@ export default function AuditReportPage() {
           <div className="space-y-1 text-xs font-mono">
             <div>Mobile Audit Proof: <a href={proofMobile} target="_blank" className="text-blue-600 underline font-medium">{proofMobile}</a></div>
             <div>Desktop Audit Proof: <a href={proofDesktop} target="_blank" className="text-blue-600 underline font-medium">{proofDesktop}</a></div>
+          </div>
+        </section>
+
+        {/* Strategy Discussion & Implementation Call to Action */}
+        <section className="mb-6 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-xl print:border print:border-slate-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 font-poppins block mb-1">
+                STRATEGY DISCUSSION & IMPLEMENTATION
+              </span>
+              <h3 className="text-sm sm:text-base font-extrabold font-poppins text-white">
+                Schedule a 15-Minute Technical Strategy Discussion
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                Ready to implement performance acceleration, Core Web Vitals optimization, and AI chatbot automation for <strong>{businessName}</strong>? Our engineering team is available for a direct technical review.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto print:hidden">
+              <a
+                href={`https://api.whatsapp.com/send?phone=+919655798100&text=${encodeURIComponent(`Hi RoamWork! I reviewed the Technical Audit Report for ${businessName} (${cleanDomain}) and would like to schedule a strategy discussion.`)}`}
+                target="_blank"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition font-poppins flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-600/20 active:scale-95"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Book via WhatsApp</span>
+              </a>
+
+              <a
+                href={`mailto:roamwork.techs@gmail.com?subject=${encodeURIComponent(`Strategy Discussion Request for ${businessName}`)}&body=${encodeURIComponent(`Hi RoamWork Engineering Team,\n\nI reviewed the Executive Audit Report for ${businessName} (${cleanDomain}) and would like to schedule a 15-minute strategy discussion to explore implementation.\n\nBest regards,`)}`}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition font-poppins flex items-center justify-center space-x-1.5 shadow-lg shadow-blue-600/20 active:scale-95"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span>Book via Email</span>
+              </a>
+            </div>
           </div>
         </section>
 

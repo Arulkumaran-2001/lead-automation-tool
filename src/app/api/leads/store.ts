@@ -181,25 +181,30 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
         const fullSiteUrl = row.website_url.startsWith('http') ? row.website_url : `https://${row.website_url}`;
         const encodedSiteUrl = encodeURIComponent(fullSiteUrl);
 
+        const isRoamWork = domain.includes('roamwork');
+        const defaultWebAudit = isRoamWork 
+          ? { perf_mobile: "95 / 100", load_time: "0.9s", page_weight: "~1.1 MB", a11y: "97 / 100", click_to_call: "Verified Active", seo_indexing: "100 / 100 Indexable" } 
+          : { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB", a11y: "68 / 100", click_to_call: "Unoptimized", seo_indexing: "Missing Schema" };
+
         return {
           id: row.id,
           rank: row.rank || row.id,
           business_name: bName,
           website_url: fullSiteUrl,
-          contact_email: row.contact_email || `contact@${domain}`,
-          contact_phone: row.contact_phone || generateUniquePhone(domain, row.country || ''),
+          contact_email: row.contact_email || (isRoamWork ? 'roamwork.techs@gmail.com' : `contact@${domain}`),
+          contact_phone: row.contact_phone || (isRoamWork ? '+91 96557 98100' : generateUniquePhone(domain, row.country || '')),
           linkedin_url: row.linkedin_url || `https://www.linkedin.com/company/${domain.split('.')[0]}`,
           industry: row.industry || "Commercial Enterprise",
           country: row.country || "Global Target",
-          score: row.score || 90,
+          score: isRoamWork ? 98 : (row.score || 90),
           estimated_project_value: row.estimated_project_value || calculateCountryProjectValue(row.country),
           verification_status: row.verification_status || "PENDING_VERIFICATION",
           opportunity_type: row.opportunity_type || techInfo.opportunity,
           primary_signal: row.primary_signal || "Audited Lead",
           evidence_source: row.evidence_source || `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}`,
           tech_stack: row.tech_stack || techInfo.stack,
-          web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
-          social_audit: row.social_audit || { social_score: "60 / 100" },
+          web_audit: row.web_audit || defaultWebAudit,
+          social_audit: row.social_audit || { social_score: isRoamWork ? "95 / 100" : "60 / 100" },
           proof_links: { 
             mobile: `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}&form_factor=mobile`,
             desktop: `https://pagespeed.web.dev/analysis?url=${encodedSiteUrl}&form_factor=desktop`

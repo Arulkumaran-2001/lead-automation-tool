@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
       <head>
-        <link rel="icon" href="/brand/logo.png" type="image/png" />
+        <link rel="icon" href="/brand/fav-icon.png" type="image/png" />
       </head>
       <body className="font-inter bg-slate-950 text-slate-100 min-h-screen antialiased">
         {children}
