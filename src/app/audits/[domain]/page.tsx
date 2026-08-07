@@ -66,14 +66,21 @@ export default function AuditReportPage() {
     );
   }
 
-  const businessName = lead?.business_name || `${cleanDomain} Enterprise`;
+  const formatName = (domainStr: string) => {
+    const namePart = domainStr.split('.')[0];
+    const spaced = namePart.replace(/[-_]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+    return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const businessName = (lead?.business_name && !lead.business_name.includes('.shop Business')) ? lead.business_name : formatName(cleanDomain);
   const websiteUrl = lead?.website_url || `https://${cleanDomain}`;
   const perfScore = lead?.web_audit?.perf_mobile || '38 / 100';
   const loadTime = lead?.web_audit?.load_time || '4.5s';
   const a11yScore = lead?.web_audit?.a11y || '68 / 100';
   const pageWeight = lead?.web_audit?.page_weight || '~6.8 MB';
-  const proofMobile = lead?.proof_links?.mobile || `https://pagespeed.web.dev/analysis?url=https://${cleanDomain}`;
-  const proofDesktop = lead?.proof_links?.desktop || `https://pagespeed.web.dev/analysis?url=https://${cleanDomain}`;
+  const encodedFullUrl = encodeURIComponent(`https://${cleanDomain}`);
+  const proofMobile = lead?.proof_links?.mobile || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=mobile`;
+  const proofDesktop = lead?.proof_links?.desktop || `https://pagespeed.web.dev/analysis?url=${encodedFullUrl}&form_factor=desktop`;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-inter p-4 sm:p-8 print:p-0 print:bg-white">

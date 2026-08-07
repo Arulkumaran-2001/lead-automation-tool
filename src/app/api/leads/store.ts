@@ -14,7 +14,18 @@ export function calculateCountryProjectValue(country: string): string {
 }
 
 export function extractDomain(url: string): string {
-  return url.replace('https://', '').replace('http://', '').replace('www.', '').split('/')[0].toLowerCase();
+  if (!url) return 'website.com';
+  let cleaned = url.trim().toLowerCase();
+  cleaned = cleaned.replace(/^https?:\/\//, '').replace(/^www\./, '');
+  cleaned = cleaned.split('/')[0].split('?')[0].split('#')[0];
+  return cleaned || 'website.com';
+}
+
+export function formatBusinessNameFromDomain(domain: string): string {
+  if (!domain) return 'Client Business';
+  const namePart = domain.split('.')[0];
+  const spaced = namePart.replace(/[-_]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+  return spaced.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
 export let initialLeads = [
@@ -30,7 +41,7 @@ export let initialLeads = [
     verification_status: "PENDING_VERIFICATION",
     opportunity_type: "Website Redesign, Speed Fix, Social Media Strategy & Booking Engine",
     primary_signal: "High-value medical clinic: PageSpeed 34/100, broken mobile click-to-call link, unoptimized Instagram/LinkedIn presence",
-    evidence_source: "https://pagespeed.web.dev/analysis/https-rrdentalhospital-com/frwn6p4niq?form_factor=mobile",
+    evidence_source: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Frrdentalhospital.com&form_factor=mobile",
     web_audit: {
       perf_mobile: "34 / 100",
       load_time: "5.4s (Mobile Content)",
@@ -46,11 +57,11 @@ export let initialLeads = [
       social_score: "58 / 100"
     },
     proof_links: {
-      mobile: "https://pagespeed.web.dev/analysis/https-rrdentalhospital-com/frwn6p4niq?form_factor=mobile",
-      desktop: "https://pagespeed.web.dev/analysis/https-rrdentalhospital-com/frwn6p4niq?form_factor=desktop"
+      mobile: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Frrdentalhospital.com&form_factor=mobile",
+      desktop: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Frrdentalhospital.com&form_factor=desktop"
     },
     drafts: {
-      email: "Subject: Executive Digital & Performance Review for RR Dental Hospital\n\nDear Leadership Team,\n\nWe completed a comprehensive digital audit of rrdentalhospital.com and identified critical performance bottlenecks (34/100 mobile PageSpeed score, 5.4s load time, 11MB transfer weight) and a mobile phone link mismatch affecting appointment bookings.\n\nAttached is our Executive Teaser Audit report.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nVOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
+      email: "Subject: Executive Digital & Performance Review for RR Dental Hospital\n\nDear Leadership Team,\n\nWe completed a comprehensive digital audit of rrdentalhospital.com and identified critical performance bottlenecks (34/100 mobile PageSpeed score, 5.4s load time, 11MB transfer weight) and a mobile phone link mismatch affecting appointment bookings.\n\nAttached is our Executive Teaser Audit report.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nAddress: VOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
       linkedin: "Hi! Reaching out from RoamWork Technologies (https://www.roamwork.in/). We ran a 360° technical and social media audit on rrdentalhospital.com. We discovered quick wins for mobile speed (currently 34/100) and patient booking lead conversion. Happy to share our Executive Teaser Audit report!",
       whatsapp: "Hi RR Dental Hospital Team! This is RoamWork Technologies (https://www.roamwork.in/). View your 360° Digital Audit Report: https://rrdentalhospital.com | Contact us: +91 96557 98100 / roamwork.techs@gmail.com"
     },
@@ -59,7 +70,7 @@ export let initialLeads = [
   {
     id: 2,
     rank: 2,
-    business_name: "E-Commerce D2C Apparel Brand",
+    business_name: "Zadescoxp D2C",
     website_url: "https://zadescoxp.com",
     industry: "D2C Fashion Retail",
     country: "United States (Global D2C)",
@@ -68,7 +79,7 @@ export let initialLeads = [
     verification_status: "PENDING_VERIFICATION",
     opportunity_type: "Shopify Speed Optimization, Mobile Scroll Fix & Conversion Engineering",
     primary_signal: "Global D2C brand: Horizontal scroll overflow on 375px screens, 3.9s LCP, unoptimized Pinterest/Instagram catalog links",
-    evidence_source: "https://www.reddit.com/r/forhire/comments/1pexuqf/hiring_seo_expert_for_ecommerce_website/",
+    evidence_source: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fzadescoxp.com&form_factor=mobile",
     web_audit: {
       perf_mobile: "38 / 100",
       load_time: "4.8s (Mobile LCP)",
@@ -84,11 +95,11 @@ export let initialLeads = [
       social_score: "62 / 100"
     },
     proof_links: {
-      mobile: "https://pagespeed.web.dev/analysis/https-zadescoxp-com/mobile",
-      desktop: "https://pagespeed.web.dev/analysis/https-zadescoxp-com/desktop"
+      mobile: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fzadescoxp.com&form_factor=mobile",
+      desktop: "https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fzadescoxp.com&form_factor=desktop"
     },
     drafts: {
-      email: "Subject: Technical & Conversion Audit for zadescoxp.com\n\nHi Team,\n\nWe ran a 360° technical and social media audit on zadescoxp.com. We discovered a mobile scroll bug where product images overflow on 375px screens, alongside a 3.8s LCP load delay affecting paid ad conversions.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nVOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
+      email: "Subject: Technical & Conversion Audit for zadescoxp.com\n\nHi Team,\n\nWe ran a 360° technical and social media audit on zadescoxp.com. We discovered a mobile scroll bug where product images overflow on 375px screens, alongside a 3.8s LCP load delay affecting paid ad conversions.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nAddress: VOC Street, T.Nagar, Chennai, Tamil Nadu 600017",
       linkedin: "Hi! Saw your request regarding e-commerce SEO and performance tuning. We audited zadescoxp.com and identified Core Web Vitals quick wins. Let me know if you'd like to see our Executive Teaser Audit PDF!",
       whatsapp: "Hi Zadescoxp Team! This is RoamWork Technologies (https://www.roamwork.in/). Here is your 360° Performance Audit report: https://zadescoxp.com | Contact us: +91 96557 98100 / roamwork.techs@gmail.com"
     },
@@ -105,11 +116,15 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
       // Map DB schema to GRIE format
       const formatted = data.map((row: any) => {
         const domain = extractDomain(row.website_url || 'website.com');
+        const bName = row.business_name && !row.business_name.includes('.shop Business') 
+          ? row.business_name 
+          : formatBusinessNameFromDomain(domain);
+
         return {
           id: row.id,
           rank: row.rank || row.id,
-          business_name: row.business_name,
-          website_url: row.website_url,
+          business_name: bName,
+          website_url: row.website_url.startsWith('http') ? row.website_url : `https://${row.website_url}`,
           industry: row.industry || "Commercial Enterprise",
           country: row.country || "Global Target",
           score: row.score || 90,
@@ -117,14 +132,17 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
           verification_status: row.verification_status || "PENDING_VERIFICATION",
           opportunity_type: row.opportunity_type || "360° Digital Growth & Speed Fix",
           primary_signal: row.primary_signal || "Audited Lead",
-          evidence_source: row.evidence_source || row.website_url,
+          evidence_source: row.evidence_source || `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}`,
           web_audit: row.web_audit || { perf_mobile: "38 / 100", load_time: "4.5s", page_weight: "~6.8 MB" },
           social_audit: row.social_audit || { social_score: "60 / 100" },
-          proof_links: row.proof_links || { mobile: row.website_url, desktop: row.website_url },
+          proof_links: row.proof_links || { 
+            mobile: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}&form_factor=mobile`,
+            desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent('https://' + domain)}&form_factor=desktop`
+          },
           drafts: row.drafts || {
-            email: row.custom_pitch || `Executive Digital Review for ${row.business_name}\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100`,
-            linkedin: `Hi! We completed a digital review for ${row.business_name}. RoamWork Technologies (https://www.roamwork.in/)`,
-            whatsapp: `Hi ${row.business_name} Team! Here is your 360° Web Audit Report from RoamWork Technologies (https://www.roamwork.in/): ${row.website_url}`
+            email: row.custom_pitch || `Executive Digital Review for ${bName}\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100`,
+            linkedin: `Hi! We completed a digital review for ${bName}. RoamWork Technologies (https://www.roamwork.in/)`,
+            whatsapp: `Hi ${bName} Team! Here is your 360° Web Audit Report from RoamWork Technologies (https://www.roamwork.in/): ${row.website_url}`
           },
           pdf_path: `/audits/${domain}`
         };
@@ -164,8 +182,11 @@ export async function ingestManualAuditLead(body: any) {
   
   for (const url of urls) {
     if (url.trim()) {
-      const cleanUrl = url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`;
-      const domain = extractDomain(cleanUrl);
+      const domain = extractDomain(url.trim());
+      const cleanUrl = `https://${domain}`;
+      const businessName = formatBusinessNameFromDomain(domain);
+      const psMobile = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}&form_factor=mobile`;
+      const psDesktop = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}&form_factor=desktop`;
       
       // DEDUPLICATION CHECK
       if (!existingDomains.has(domain)) {
@@ -175,7 +196,7 @@ export async function ingestManualAuditLead(body: any) {
         const newLead = {
           id: leadsStore.length + 1,
           rank: leadsStore.length + 1,
-          business_name: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Business`,
+          business_name: businessName,
           website_url: cleanUrl,
           industry: "Commercial Enterprise",
           country: country,
@@ -184,7 +205,7 @@ export async function ingestManualAuditLead(body: any) {
           verification_status: "PENDING_VERIFICATION",
           opportunity_type: "360° Web Speed, UX, Security & Social Media Optimization",
           primary_signal: "Manually Audited Website — Dual Audit Complete",
-          evidence_source: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
+          evidence_source: psMobile,
           web_audit: {
             perf_mobile: "38 / 100",
             load_time: "4.5s",
@@ -200,13 +221,13 @@ export async function ingestManualAuditLead(body: any) {
             social_score: "60 / 100"
           },
           proof_links: {
-            mobile: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`,
-            desktop: `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(cleanUrl)}`
+            mobile: psMobile,
+            desktop: psDesktop
           },
           drafts: {
-            email: `Subject: Digital Performance & Audit Findings for ${domain}\n\nDear Team,\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nAddress: VOC Street, T.Nagar, Chennai, Tamil Nadu 600017`,
-            linkedin: `Hi! We completed a digital review for ${domain} at RoamWork Technologies (https://www.roamwork.in/). Happy to share our Executive Teaser Audit report!`,
-            whatsapp: `Hi ${domain} Team! This is RoamWork Technologies (https://www.roamwork.in/). Here is your 360° Web & Social Media Audit Report: ${cleanUrl} | Contact us: +91 96557 98100`
+            email: `Subject: Digital Performance & Audit Findings for ${businessName}\n\nDear Team at ${businessName},\n\nWe ran a 360° technical and social media audit on ${domain}. We identified mobile PageSpeed, schema markup, and social media funnel quick wins.\n\nBest regards,\nRoamWork Technologies (https://www.roamwork.in/)\nEmail: roamwork.techs@gmail.com | WhatsApp: +91 96557 98100\nAddress: VOC Street, T.Nagar, Chennai, Tamil Nadu 600017`,
+            linkedin: `Hi ${businessName} Team! We completed a digital review for ${domain} at RoamWork Technologies (https://www.roamwork.in/). Happy to share our Executive Teaser Audit report!`,
+            whatsapp: `Hi ${businessName} Team! This is RoamWork Technologies (https://www.roamwork.in/). Here is your 360° Web & Social Media Audit Report: ${cleanUrl} | Contact us: +91 96557 98100`
           },
           pdf_path: `/audits/${domain}`
         };

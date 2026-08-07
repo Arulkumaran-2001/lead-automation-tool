@@ -124,14 +124,15 @@ export default function Dashboard() {
 
       if (channel === 'WHATSAPP') {
         const text = encodeURIComponent(draftContent);
-        window.open(`https://wa.me/919655798100?text=${text}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
       } else if (channel === 'GMAIL') {
         const subject = encodeURIComponent(`Executive Teaser Audit for ${selectedLead.business_name}`);
         const body = encodeURIComponent(draftContent);
-        window.open(`mailto:roamwork.techs@gmail.com?subject=${subject}&body=${body}`, '_blank');
+        window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
       } else if (channel === 'LINKEDIN') {
         await navigator.clipboard.writeText(draftContent);
-        alert('LinkedIn DM pitch copied to clipboard! Ready to paste and share.');
+        window.open('https://www.linkedin.com/messaging/', '_blank');
+        alert('LinkedIn DM pitch copied to clipboard! Opening LinkedIn Messages...');
       }
 
       await fetchLeads();
