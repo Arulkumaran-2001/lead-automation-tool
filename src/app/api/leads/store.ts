@@ -183,7 +183,8 @@ export async function fetchLeadsFromStore(): Promise<any[]> {
             linkedin: `Hi! We completed a digital review for ${bName}. RoamWork Technologies (https://www.roamwork.in/)`,
             whatsapp: `Hi ${bName} Team! Here is your 360° Web Audit Report from RoamWork Technologies (https://www.roamwork.in/): ${row.website_url}`
           },
-          pdf_path: `/audits/${domain}`
+          pdf_path: `/audits/${domain}`,
+          notes: row.notes || ""
         };
       });
       leadsStore = formatted;
@@ -211,6 +212,7 @@ export async function updateLeadInDatabase(id: number, verification_status: stri
       if (contactDetails.contact_email) updatePayload.contact_email = contactDetails.contact_email;
       if (contactDetails.contact_phone) updatePayload.contact_phone = contactDetails.contact_phone;
       if (contactDetails.linkedin_url) updatePayload.linkedin_url = contactDetails.linkedin_url;
+      if (contactDetails.notes !== undefined) updatePayload.notes = contactDetails.notes;
     }
 
     await supabase.from('leads').update(updatePayload).eq('id', id);
@@ -224,6 +226,7 @@ export async function updateLeadInDatabase(id: number, verification_status: stri
         if (contactDetails.contact_email) leadsStore[idx].contact_email = contactDetails.contact_email;
         if (contactDetails.contact_phone) leadsStore[idx].contact_phone = contactDetails.contact_phone;
         if (contactDetails.linkedin_url) leadsStore[idx].linkedin_url = contactDetails.linkedin_url;
+        if (contactDetails.notes !== undefined) (leadsStore[idx] as any).notes = contactDetails.notes;
       }
     }
   } catch (err) {
