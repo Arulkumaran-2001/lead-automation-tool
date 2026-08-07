@@ -94,12 +94,12 @@ export default function ProposalPage() {
       <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full space-y-8">
         
         {/* Cover Header */}
-        <div className="border-b-2 border-blue-600 pb-6 flex justify-between items-start">
+        <div className="border-b-2 border-blue-600 pb-6 flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0">
           <div>
-            <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest block font-poppins mb-1">
+            <span className="text-[10px] sm:text-xs font-extrabold text-blue-600 uppercase tracking-widest block font-poppins mb-1">
               PROJECT PROPOSAL & STATEMENT OF WORK
             </span>
-            <h1 className="text-3xl font-extrabold text-slate-900 font-poppins tracking-tight">
+            <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 font-poppins tracking-tight">
               Digital Transformation & Conversion Engineering
             </h1>
             <p className="text-xs text-slate-500 font-medium mt-1">
@@ -110,9 +110,9 @@ export default function ProposalPage() {
             </div>
           </div>
 
-          <div className="text-right flex flex-col items-end">
-            <img src="/brand/logo.png" alt="RoamWork Technologies" className="h-12 w-auto object-contain mb-2" />
-            <span className="font-extrabold text-sm text-blue-600 font-poppins">RoamWork Technologies</span>
+          <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
+            <img src="/brand/logo.png" alt="RoamWork Technologies" className="h-10 sm:h-12 w-auto object-contain mb-1 sm:mb-2" />
+            <span className="font-extrabold text-xs sm:text-sm text-blue-600 font-poppins">RoamWork Technologies</span>
             <a href="https://www.roamwork.in/" target="_blank" className="text-xs text-slate-600 underline">www.roamwork.in</a>
             <span className="text-[11px] text-slate-500">roamwork.techs@gmail.com</span>
             <span className="text-[11px] text-slate-500">WhatsApp: +91 96557 98100</span>

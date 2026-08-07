@@ -110,12 +110,12 @@ export default function AuditReportPage() {
       {/* Printable Report Document (Letter / A4 Page Container) */}
       <div className="max-w-4xl mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full">
         {/* Header Block: Client Title + Agency Branding */}
-        <div className="flex justify-between items-start border-b-2 border-blue-600 pb-6 mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0 border-b-2 border-blue-600 pb-6 mb-6">
           <div>
-            <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest block font-poppins mb-1">
+            <span className="text-[10px] sm:text-xs font-extrabold text-blue-600 uppercase tracking-widest block font-poppins mb-1">
               EXECUTIVE TEASER AUDIT
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-poppins">
+            <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-poppins">
               {businessName}
             </h1>
             <p className="text-xs text-slate-500 font-medium mt-1">
@@ -124,21 +124,21 @@ export default function AuditReportPage() {
           </div>
 
           {/* Agency Branding & Official Contact Info */}
-          <div className="text-right flex flex-col items-end">
+          <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
             <img
               src="/brand/logo.png"
               alt="RoamWork Technologies"
-              className="h-10 sm:h-12 w-auto object-contain mb-2"
+              className="h-9 sm:h-12 w-auto object-contain mb-1 sm:mb-2"
             />
-            <span className="font-extrabold text-sm text-blue-600 font-poppins">RoamWork Technologies</span>
-            <a href="https://www.roamwork.in/" target="_blank" className="text-xs text-slate-600 underline font-medium">www.roamwork.in</a>
-            <span className="text-[11px] text-slate-500">roamwork.techs@gmail.com</span>
-            <span className="text-[11px] text-slate-500">WhatsApp: +91 96557 98100</span>
+            <span className="font-extrabold text-xs sm:text-sm text-blue-600 font-poppins">RoamWork Technologies</span>
+            <a href="https://www.roamwork.in/" target="_blank" className="text-[11px] sm:text-xs text-slate-600 underline font-medium">www.roamwork.in</a>
+            <span className="text-[10px] sm:text-[11px] text-slate-500">roamwork.techs@gmail.com</span>
+            <span className="text-[10px] sm:text-[11px] text-slate-500">WhatsApp: +91 96557 98100</span>
           </div>
         </div>
 
         {/* 4 Metric Badges */}
-        <div className="grid grid-cols-4 gap-3 mb-6 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6 text-center">
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
             <span className="text-xl sm:text-2xl font-extrabold text-red-600 block font-poppins">{perfScore}</span>
             <span className="text-[10px] text-slate-500 font-medium leading-tight block mt-0.5">Mobile performance score (Google)</span>
